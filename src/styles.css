@@ -1069,6 +1069,14 @@ a {
   color: rgba(242, 245, 239, 0.88);
 }
 
+.about-page__hero-subtitle {
+  width: min(34rem, calc(100% - 2rem));
+  margin: -0.9rem auto 0;
+  font-size: clamp(0.9rem, 1.18vw, 1rem);
+  line-height: 1.72;
+  color: rgba(242, 245, 239, 0.66);
+}
+
 .about-page__hero-portrait {
   margin: 0;
   display: flex;

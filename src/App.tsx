@@ -10,6 +10,7 @@ import proximoLogoWhite from "./assets/proximo-logo-white.png";
 import signatureImage from "./assets/signature-clean.png";
 import utnLogoClean from "./assets/utn-logo-clean.png";
 import { Navbar } from "./components/Navbar";
+import { SeoManager } from "./components/Seo";
 
 type BackgroundWord = {
   id: string;
@@ -914,7 +915,10 @@ function HomePage() {
             }
           >
             <div className="hero-portrait__frame">
-              <img src={portraitImage} alt="Portrait of Cortez" />
+              <img
+                src={portraitImage}
+                alt="Portrait of Lautaro Cortez, software engineer and backend engineer"
+              />
             </div>
           </div>
 
@@ -927,12 +931,13 @@ function HomePage() {
             }}
           >
             <p className="hero-copy__eyebrow" style={{ letterSpacing: `${copyLetterSpacing}em` }}>
-              Software Engineer
+              Lautaro Cortez / Software Engineer
             </p>
             <h1 className="hero-copy__title">Hi, I&apos;m Cortez.</h1>
             <p className="hero-copy__body">
-              I create scalable software experiences through clean architecture,
-              robust backend development, and solutions built to perform.
+              I&apos;m Lautaro Cortez, a software engineer and backend engineer focused
+              on scalable software experiences, clean architecture, robust backend
+              development, and solutions built to perform.
             </p>
             <a className="hero-copy__button" href="#contact">
               Contact
@@ -1144,6 +1149,7 @@ function HomePage() {
       </section>
 
       <section className="works-sequence" id="works" ref={worksSequenceRef}>
+        <h2 className="sr-only">Selected software engineering and backend projects</h2>
         <div
           className="works-stage"
           style={
@@ -1276,6 +1282,7 @@ function HomePage() {
       </section>
 
       <section className="expertise-section" id="expertise" ref={expertiseSectionRef}>
+        <h2 className="sr-only">Backend engineering expertise and technologies</h2>
         <div className="expertise-side-ui" aria-hidden="true">
           <span className="expertise-side-ui__label">04 / EXPERTISE</span>
           <span className="expertise-side-ui__line">
@@ -1338,6 +1345,7 @@ function HomePage() {
       </section>
 
       <section className="contact-section" id="contact" ref={contactSectionRef}>
+        <h2 className="sr-only">Contact Lautaro Cortez for software engineering roles</h2>
         <div className="contact-side-ui" aria-hidden="true">
           <span className="contact-side-ui__label">05 / CONTACT</span>
           <span className="contact-side-ui__line">
@@ -1506,12 +1514,18 @@ function AboutPage() {
               </span>
             </h1>
 
+            <p className="about-page__hero-subtitle">
+              Lautaro Cortez is a software engineer focused on backend systems,
+              software quality, API design, and product architecture that holds up
+              over time.
+            </p>
+
             <figure className="about-page__hero-portrait">
               <div className="about-page__hero-photo">
-                <img src={aboutChildhoodImage} alt="Cortez as a child" />
+                <img src={aboutChildhoodImage} alt="Lautaro Cortez as a child" />
               </div>
               <figcaption className="about-page__hero-caption">
-                Cortez, future software engineer.
+                Lautaro Cortez, future software engineer.
               </figcaption>
             </figure>
           </div>
@@ -1521,14 +1535,16 @@ function AboutPage() {
       <section className="about-page__content">
         <div className="about-page__statement">
           <p>
-            My path into software was shaped by two disciplines that still define the way I
-            build: Systems Engineering gave me structure, while Graphic Design trained my eye
-            for hierarchy, clarity, and communication.
+            I&apos;m Lautaro Cortez, a software engineer whose path into software was
+            shaped by two disciplines that still define the way I build: Systems
+            Engineering gave me structure, while Graphic Design trained my eye for
+            hierarchy, clarity, and communication.
           </p>
           <p>
             That mix carried into real product work, where I moved from implementation for
-            external clients to QA and software engineering, focusing on quality, security, and
-            improvements that make platforms more robust, efficient, and scalable.
+            external clients to QA and software engineering, focusing on backend quality,
+            security, API thinking, and improvements that make platforms more robust,
+            efficient, and scalable.
           </p>
         </div>
 
@@ -1682,6 +1698,7 @@ function App() {
   return (
     <>
       <ScrollManager />
+      <SeoManager />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
