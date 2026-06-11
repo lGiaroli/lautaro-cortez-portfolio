@@ -1,9 +1,18 @@
 ﻿import type { CSSProperties } from "react";
 import { startTransition, useEffect, useRef, useState } from "react";
-import { Link, Route, Routes, useLocation } from "react-router-dom";
+import { Link, Route, Routes, useLocation, useParams } from "react-router-dom";
+import alqagDashboardImage from "./assets/alqag-dashboard.png";
+import alqagListingsImage from "./assets/alqag-listings.png";
+import alqagMapPopoutImage from "./assets/alqag-map-popout.png";
+import alqagSmartSearchImage from "./assets/alqag-smart-search.png";
 import aboutChildhoodImage from "./assets/about-childhood.jfif";
+import focoVivoMapViewImage from "./assets/foco-vivo-map-view.png";
 import ies21Logo from "./assets/ies21-logo.png";
 import lateralLogo from "./assets/lateral-logo.png";
+import lateralTimeAdminImage from "./assets/lateral-time-admin-light.png";
+import lateralTimeDashboardImage from "./assets/lateral-time-dashboard-light.png";
+import lateralTimeInsightsImage from "./assets/lateral-time-insights-light.png";
+import lateralTimeTimesheetImage from "./assets/lateral-time-timesheet-light.png";
 import resumePdf from "./assets/Lautaro_Cortez_-_Software_Engineer.pdf";
 import portraitImage from "./assets/portrait.jfif";
 import proximoLogoWhite from "./assets/proximo-logo-white.png";
@@ -60,6 +69,57 @@ type WorkCard = {
   points: string[];
   media: string;
   glow: string;
+  href: string;
+  routeLabel: string;
+  liveUrl?: string;
+  liveLabel?: string;
+  mediaPosition?: string;
+  mediaSize?: string;
+};
+
+type ProjectMetric = {
+  label: string;
+  value: string;
+};
+
+type ProjectInfoGroup = {
+  label: string;
+  items: string[];
+};
+
+type ProjectDeepDive = {
+  kicker: string;
+  title: string;
+  body: string[];
+  points?: string[];
+};
+
+type ProjectScreenshot = {
+  src: string;
+  alt: string;
+  caption: string;
+  variant?: "featured" | "wide" | "portrait";
+};
+
+type ProjectDetail = {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  body: string[];
+  metrics: ProjectMetric[];
+  outcomes: string[];
+  caption?: string;
+  groups?: ProjectInfoGroup[];
+  deepDives?: ProjectDeepDive[];
+  image?: string;
+  imageAlt?: string;
+  imagePosition?: string;
+  imageFit?: "cover" | "contain";
+  screenshots?: ProjectScreenshot[];
+  galleryStyle?: "grid" | "curated";
+  galleryPlacement?: "after-showcase" | "after-statement";
+  galleryTitle?: string;
+  galleryDescription?: string;
 };
 
 type SignatureTracePath = {
@@ -382,39 +442,492 @@ const fragments: Fragment[] = [
 
 const worksCards: WorkCard[] = [
   {
-    id: "atlas-core",
-    kicker: "Platform Architecture",
-    title: "Atlas Core",
-    summary: "Backend orchestration for resilient product flows, service boundaries, and systems that stay calm under scale.",
-    points: ["Service Contracts", "Queue Recovery", "Observability Layer"],
+    id: "lateral-time",
+    kicker: "Internal Time Tracking",
+    title: "Lateral Time",
+    summary:
+      "Internal time, review, incident, and team operations platform tuned to stay inside a strict free-tier infrastructure budget.",
+    points: ["Time capture", "Review ops", "CU-hour budget"],
     media:
-      "radial-gradient(circle at 76% 22%, rgba(214, 228, 255, 0.2) 0%, rgba(214, 228, 255, 0) 18%), radial-gradient(circle at 24% 78%, rgba(122, 196, 171, 0.18) 0%, rgba(122, 196, 171, 0) 24%), linear-gradient(155deg, #19212d 0%, #10151d 46%, #080a0d 100%)",
+      `linear-gradient(90deg, rgba(6, 9, 8, 0.35) 0%, rgba(6, 9, 8, 0.03) 48%, rgba(6, 9, 8, 0.2) 100%), url(${lateralTimeDashboardImage})`,
     glow:
-      "radial-gradient(circle at 72% 20%, rgba(197, 219, 255, 0.22) 0%, rgba(197, 219, 255, 0) 42%), linear-gradient(180deg, rgba(168, 209, 196, 0.08) 0%, rgba(168, 209, 196, 0) 36%)",
+      "radial-gradient(circle at 78% 22%, rgba(13, 125, 242, 0.2) 0%, rgba(13, 125, 242, 0) 42%), radial-gradient(circle at 18% 70%, rgba(22, 139, 131, 0.14) 0%, rgba(22, 139, 131, 0) 34%), linear-gradient(180deg, rgba(214, 234, 244, 0.05) 0%, rgba(214, 234, 244, 0.16) 100%)",
+    href: "/projects/lateral-time",
+    routeLabel: "View Case",
+    liveUrl: "https://lateraltime.uk",
+    liveLabel: "lateraltime.uk",
+    mediaPosition: "center, center top",
+    mediaSize: "cover, cover",
   },
   {
-    id: "signal-ops",
-    kicker: "Realtime Systems",
-    title: "Signal Ops",
-    summary: "Monitoring surfaces and event-driven workflows shaped to remain readable while throughput, alerts, and data pressure rise.",
-    points: ["Stream Processing", "Latency Budgets", "Control Surfaces"],
+    id: "foco-vivo",
+    kicker: "Realtime Wildfire Ops",
+    title: "Foco Vivo",
+    summary:
+      "Wildfire triage workspace that combines satellite detections, risk layers, weather, reports, and response resources.",
+    points: ["Detection", "Triage map", "Risk context"],
     media:
-      "radial-gradient(circle at 22% 24%, rgba(184, 221, 206, 0.16) 0%, rgba(184, 221, 206, 0) 20%), radial-gradient(circle at 78% 68%, rgba(205, 214, 255, 0.14) 0%, rgba(205, 214, 255, 0) 22%), linear-gradient(142deg, #141916 0%, #0e1311 52%, #07090a 100%)",
+      `linear-gradient(180deg, rgba(8, 10, 11, 0.02) 0%, rgba(8, 10, 11, 0.16) 100%), url(${focoVivoMapViewImage})`,
     glow:
-      "radial-gradient(circle at 32% 26%, rgba(182, 223, 209, 0.18) 0%, rgba(182, 223, 209, 0) 46%), linear-gradient(180deg, rgba(194, 214, 255, 0.06) 0%, rgba(194, 214, 255, 0) 30%)",
+      "radial-gradient(circle at 72% 18%, rgba(220, 230, 49, 0.2) 0%, rgba(220, 230, 49, 0) 40%), radial-gradient(circle at 82% 76%, rgba(85, 209, 156, 0.12) 0%, rgba(85, 209, 156, 0) 36%), linear-gradient(180deg, rgba(24, 17, 32, 0.04) 0%, rgba(24, 17, 32, 0.16) 100%)",
+    href: "/projects/foco-vivo",
+    routeLabel: "View Case",
+    mediaPosition: "center 12%",
   },
   {
-    id: "ledger-flow",
-    kicker: "Financial Backend",
-    title: "Ledger Flow",
-    summary: "Transaction-heavy infrastructure with deterministic processing, audit-safe behavior, and delivery designed to age without noise.",
-    points: ["Idempotent Jobs", "Audit Trails", "Cache Strategy"],
+    id: "alqag",
+    kicker: "Rental Search Radar",
+    title: "alqag",
+    summary:
+      "Map-led rental radar that normalizes listings, validates location confidence, and turns fragmented search into one decision surface.",
+    points: ["Smart search", "Location trust", "Map clusters"],
     media:
-      "radial-gradient(circle at 28% 78%, rgba(215, 235, 224, 0.16) 0%, rgba(215, 235, 224, 0) 18%), radial-gradient(circle at 74% 24%, rgba(255, 229, 185, 0.12) 0%, rgba(255, 229, 185, 0) 22%), linear-gradient(150deg, #1a1713 0%, #0f1112 42%, #08090a 100%)",
+      `linear-gradient(90deg, rgba(6, 7, 8, 0.54) 0%, rgba(6, 7, 8, 0.1) 56%, rgba(6, 7, 8, 0.34) 100%), linear-gradient(180deg, rgba(6, 7, 8, 0.08) 0%, rgba(6, 7, 8, 0.26) 100%), url(${alqagDashboardImage})`,
     glow:
-      "radial-gradient(circle at 70% 24%, rgba(255, 222, 170, 0.14) 0%, rgba(255, 222, 170, 0) 44%), linear-gradient(180deg, rgba(215, 235, 224, 0.07) 0%, rgba(215, 235, 224, 0) 34%)",
+      "radial-gradient(circle at 74% 22%, rgba(255, 52, 94, 0.18) 0%, rgba(255, 52, 94, 0) 40%), radial-gradient(circle at 18% 70%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 34%), linear-gradient(180deg, rgba(255, 52, 94, 0.05) 0%, rgba(255, 52, 94, 0.14) 100%)",
+    href: "/projects/alqag",
+    routeLabel: "View Case",
+    mediaPosition: "center top",
   },
 ];
+
+const worksDeckCards = ["alqag", "foco-vivo", "lateral-time"].map((id) => {
+  const card = worksCards.find((item) => item.id === id);
+
+  if (!card) {
+    throw new Error(`Missing work card: ${id}`);
+  }
+
+  return card;
+});
+
+const worksStackPoses = [
+  {
+    entryX: 18.5,
+    entryY: -27,
+    entryRotate: 14,
+    finalX: -5.2,
+    finalY: 5.6,
+    finalRotate: -6.1,
+    finalScale: 0.9,
+    mediaShiftStart: 7.2,
+    mediaShiftEnd: 0.4,
+  },
+  {
+    entryX: -16.5,
+    entryY: -24.5,
+    entryRotate: -12.5,
+    finalX: 1.8,
+    finalY: 2.3,
+    finalRotate: 3.2,
+    finalScale: 0.95,
+    mediaShiftStart: 5.8,
+    mediaShiftEnd: -0.1,
+  },
+  {
+    entryX: 13.5,
+    entryY: -21.5,
+    entryRotate: 9.5,
+    finalX: 0,
+    finalY: -0.6,
+    finalRotate: -1.1,
+    finalScale: 1,
+    mediaShiftStart: 4.8,
+    mediaShiftEnd: -0.5,
+  },
+] as const;
+
+const projectDetails: Record<string, ProjectDetail> = {
+  "lateral-time": {
+    eyebrow: "Internal Platform / Time Tracking",
+    title: "Lateral Time",
+    lead:
+      "A live internal time tracking, operational reporting, and team administration platform built for Lateral's day-to-day work.",
+    body: [
+      "I designed and implemented Lateral Time as an internal product for tracking work hours, reviewing timesheets, managing teams, and turning daily operational activity into clear reports.",
+      "The product covers the workflows a team needs every week: time entries, active timers, manual adjustments, client and project assignment, approvals, technical incident coverage, user administration, roles, capacity, and timezone-aware reporting.",
+      "The main engineering challenge was efficiency. I shaped the backend and persistence model so multiple concurrent users could work in the platform while keeping infrastructure usage under a strict free-tier target.",
+    ],
+    metrics: [
+      { label: "Product type", value: "Internal operations platform" },
+      { label: "Role", value: "Product design and full-stack engineering" },
+      { label: "Status", value: "Live at lateraltime.uk" },
+      { label: "Infrastructure target", value: "Under 100 CU-hours monthly" },
+    ],
+    outcomes: [
+      "Email/password authentication with sessions, cookies, tokens, password recovery, and password changes",
+      "Daily and weekly time tracking with timers, manual entries, timesheet submission, approvals, and editable review flows",
+      "Admin tools for users, roles, teams, weekly capacity, timezones, clients, projects, and assignments",
+      "Timezone-aware compliance reports that account for daily minimums, capacity, billable work, and technical incidents",
+      "Production hardening for Render/Vercel, including secure CORS, API timeouts, and safer long-running states",
+    ],
+    caption:
+      "The main workspace keeps daily tracking, team capacity, review status, and operational signals visible without relying on screenshots, GPS, or invasive monitoring.",
+    groups: [
+      {
+        label: "Product",
+        items: ["Time tracking", "Timesheets", "Approvals", "Operational reports"],
+      },
+      {
+        label: "Frontend",
+        items: ["TypeScript", "React", "Next.js", "Responsive UI"],
+      },
+      {
+        label: "Backend",
+        items: ["API routes", "Prisma", "PostgreSQL", "Session auth"],
+      },
+      {
+        label: "Operations",
+        items: ["Render", "Vercel", "Connection pooling", "CU-hour optimization"],
+      },
+    ],
+    deepDives: [
+      {
+        kicker: "Product Scope",
+        title: "A daily operating system for time, teams, and review",
+        body: [
+          "Lateral Time is more than a timer. It gives team members a fast way to register work while giving administrators and reviewers a structured view of clients, projects, capacity, compliance, approvals, and exceptions.",
+          "The platform supports active sessions, manual entries, weekly timesheets, editable dashboards, user and role management, client/project administration, approval flows, technical incidents, and operational reporting.",
+        ],
+        points: [
+          "Day-to-day time capture without screenshots, GPS, or invasive monitoring",
+          "Team administration with roles, weekly capacity, timezone, and assignment controls",
+          "Review surfaces for approvals, incidents, daily minimums, and billable reporting",
+        ],
+      },
+      {
+        kicker: "CU-Hour Optimization",
+        title: "Built to stay inside a strict free-tier budget",
+        body: [
+          "The most important backend constraint was infrastructure consumption. The initial approach was too expensive for a small internal tool, so I redesigned the persistence and reporting behavior around incremental work.",
+          "Instead of recomputing full review state or rewriting the complete workspace after every interaction, the app persists only modified entities, uses debounced writes, and keeps cached review snapshots that can be updated cheaply.",
+        ],
+        points: [
+          "Replaced expensive recomputation with snapshots and review caching",
+          "Generated reports with Map-based structures and single-pass traversal",
+          "Persisted only dirty entities instead of rewriting the full workspace",
+          "Tracked dirty credentials so password hashes are updated only when needed",
+        ],
+      },
+      {
+        kicker: "Persistence",
+        title: "Reduced write pressure and idle database cost",
+        body: [
+          "The persistence layer was tuned for many small interactions. Debounced saving prevents Postgres writes on every micro-change, while granular dirty tracking keeps updates narrow and predictable.",
+          "I also adjusted the Prisma/Postgres pool with low connection limits, connection timeout, and idle timeout so inactive connections can be released instead of silently consuming CU-hours when there is no traffic.",
+        ],
+        points: [
+          "Debounced persistence for high-frequency UI changes",
+          "Low database pool limits for an internal multi-user workload",
+          "Connection and idle timeouts to avoid paying for inactive sessions",
+        ],
+      },
+      {
+        kicker: "Reporting",
+        title: "Operational compliance that understands context",
+        body: [
+          "The reporting model accounts for daily minimums, weekly capacity, billable work, timezones, and technical incidents. That makes the output useful for real operations instead of being a raw export of timer rows.",
+          "Insights surface automated signals such as missing minimums, incident-covered gaps, and pending blockers, helping reviewers focus on exceptions instead of scanning every timesheet manually.",
+        ],
+        points: [
+          "Timezone-aware daily compliance checks",
+          "Incident coverage that can explain legitimate work gaps",
+          "Automated insights for review and operational follow-up",
+        ],
+      },
+      {
+        kicker: "Experience",
+        title: "Responsive UI for a tool people use every day",
+        body: [
+          "The interface is intentionally operational: compact enough for repeated use, but polished enough to make daily tracking feel clear rather than bureaucratic.",
+          "I refined the product with dark mode, iOS/macOS-style controls, real switches, segmented controls, password reveal, tooltips, inline validation, optimistic local state, and fewer unnecessary refetches after granular changes.",
+        ],
+      },
+    ],
+    image: lateralTimeDashboardImage,
+    imageAlt: "Lateral Time dashboard with weekly capacity, timer entry, timesheet summary, and automated insights",
+    imagePosition: "center top",
+    imageFit: "cover",
+    galleryStyle: "curated",
+    galleryPlacement: "after-statement",
+    galleryTitle: "Selected product surfaces",
+    galleryDescription:
+      "A small set of screens that show the operating loop: capture time, review exceptions, and administer the workspace.",
+    screenshots: [
+      {
+        src: lateralTimeTimesheetImage,
+        alt: "Lateral Time weekly timesheet with client grid and manual entry panel",
+        caption:
+          "Weekly timesheet view with capacity, billable time, manual entries, client grid, and editable registered work.",
+        variant: "featured",
+      },
+      {
+        src: lateralTimeInsightsImage,
+        alt: "Lateral Time insights screen with automated signals and technical incident review form",
+        caption:
+          "Automated signals turn missing minimums and technical incidents into reviewable operational context.",
+        variant: "wide",
+      },
+      {
+        src: lateralTimeAdminImage,
+        alt: "Lateral Time admin control center with organization settings, access policy, roles, and capacity",
+        caption:
+          "Admin control center for credentials, organization rules, users, roles, capacity, timezones, and access policy.",
+        variant: "wide",
+      },
+    ],
+  },
+  "foco-vivo": {
+    eyebrow: "Operational Platform / Wildfire Response",
+    title: "Foco Vivo",
+    lead:
+      "An operational platform for early wildfire detection, monitoring, and triage, initially focused on Cordoba, Argentina.",
+    body: [
+      "Foco Vivo is built around one product decision: it does not replace official fire confirmation. Instead, it accelerates the moment before confirmation by helping operators, firefighters, civil defense teams, and municipalities inspect signals in one shared operational surface.",
+      "The system brings together satellite hotspots, verified human reports, official IDECOR risk context, weather signals, geocoding, and fire station data so a team can move from scattered observations to a triage-ready event.",
+      "The platform is shaped around the operational workflow behind that decision: ingestion, normalization, scoring, event grouping, resilience, and a map interface designed for decision-making under pressure.",
+    ],
+    metrics: [
+      { label: "Product type", value: "Early detection and triage" },
+      { label: "Initial region", value: "Cordoba, Argentina" },
+      { label: "Role", value: "Full-stack engineering" },
+      { label: "Product guardrail", value: "Human confirmation first" },
+    ],
+    outcomes: [
+      "API-first backend for ingestion, scoring, grouping, and alert delivery",
+      "Operational dashboard and immersive map for realtime and historical analysis",
+      "Controlled fallback behavior when external providers are unavailable",
+    ],
+    caption:
+      "The workspace is designed to keep satellite detections, official risk layers, weather, reports, and response resources visible without forcing the operator to lose map context.",
+    groups: [
+      {
+        label: "Backend",
+        items: ["Python", "FastAPI", "SQLAlchemy", "Celery"],
+      },
+      {
+        label: "Frontend",
+        items: ["TypeScript", "Next.js", "React"],
+      },
+      {
+        label: "Persistence",
+        items: ["SQL", "PostgreSQL/PostGIS", "SQLite for local tests"],
+      },
+      {
+        label: "Deployment",
+        items: ["Docker Compose", "Caddy", "Environment-based configuration"],
+      },
+    ],
+    deepDives: [
+      {
+        kicker: "Architecture",
+        title: "Two-layer platform design",
+        body: [
+          "The implemented architecture separates an API-first backend from an operational frontend. The backend owns ingestion, normalization, scoring, event grouping, subscriptions, and alerts.",
+          "The frontend is a web workspace built around a dashboard and an immersive map, supporting both realtime monitoring and historical analysis without turning the interface into a passive report.",
+        ],
+        points: [
+          "Backend services organized by internal domain responsibilities",
+          "Domain routes under API modules for observations, events, reports, subscriptions, and detection cell snapshots",
+          "Programmable tasks and synchronization scripts for batch and scheduled work",
+        ],
+      },
+      {
+        kicker: "Integration",
+        title: "Heterogeneous sources with graceful degradation",
+        body: [
+          "Foco Vivo integrates external providers with different reliability profiles and data shapes. FIRMS satellite detections, IDECOR official risk, weather data, geocoding, and fire station records are normalized into a common operational model.",
+          "When a provider fails or returns incomplete data, the system is designed to degrade explicitly instead of silently breaking the operator workflow.",
+        ],
+        points: [
+          "Provider configuration through environment variables",
+          "Thresholds and notification behavior controlled per environment",
+          "Fallbacks for external data interruptions",
+        ],
+      },
+      {
+        kicker: "Detection Logic",
+        title: "Heuristic early-detection engine by cell",
+        body: [
+          "The detection engine combines multi-source signals such as hotspots, fast signals, human reports, risk, and weather to classify cells across operational states.",
+          "Known thermal sources are penalized so the platform can reduce obvious false positives before they become unnecessary triage noise.",
+        ],
+        points: [
+          "States from noise and observation to suspected fire and early alert",
+          "Multi-source scoring instead of single-signal alerts",
+          "Explicit product boundary: no automatic official confirmation in V1",
+        ],
+      },
+      {
+        kicker: "Triage Model",
+        title: "Spatiotemporal grouping into actionable events",
+        body: [
+          "Raw observations are useful, but operators need an event they can reason about. Foco Vivo groups scattered observations into triage units using configurable time windows and geographic radius rules.",
+          "That turns noisy detections into a more actionable workflow: inspect the event, understand its context, review provenance, and decide what needs escalation.",
+        ],
+      },
+      {
+        kicker: "Product Surface",
+        title: "Decision-oriented operational map",
+        body: [
+          "The map overlays meteorological layers, official IDECOR risk, probable detections, reports, and critical resources such as fire stations in one surface.",
+          "Camera persistence keeps the operator anchored when switching layers, preventing the common operational problem of losing spatial context while comparing information.",
+        ],
+        points: [
+          "Layered environmental and response context",
+          "Realtime and historical modes for traceability",
+          "Map-first workflow tuned for triage rather than presentation",
+        ],
+      },
+      {
+        kicker: "Engineering Principles",
+        title: "Designed for traceability and operational resilience",
+        body: [
+          "The codebase follows a clear separation of responsibilities between presentation, API routes, domain services, persistence, and batch tasks.",
+          "The domain model reflects the operational language of the product through entities such as observation, event, report, subscription, and detection cell snapshot.",
+        ],
+        points: [
+          "12-factor style configuration for sources, thresholds, security, and notifications",
+          "Explicit traceability through historical mode and report provenance",
+          "Resilience and controlled degradation as core product behavior",
+        ],
+      },
+    ],
+    image: focoVivoMapViewImage,
+    imageAlt: "Foco Vivo immersive map interface with wildfire markers and event triage panels",
+    imagePosition: "center top",
+  },
+  alqag: {
+    eyebrow: "Full-Stack Platform / Permanent Rentals",
+    title: "alqag",
+    lead:
+      "A map-led rental search platform that turns scattered permanent rental listings into normalized, comparable, decision-ready results.",
+    body: [
+      "alqag was built around a familiar but painful problem: searching for long-term rentals often means jumping between portals, local real estate websites, independent pages, and repeated or incomplete posts.",
+      "The platform centralizes public rental listings, normalizes inconsistent data, deduplicates repeated properties, enriches images and location metadata, and presents everything in a clean product experience inspired by modern marketplace interfaces.",
+      "The most important product decision was honesty around location quality. Every listing can appear on the map, but the UI communicates whether the pin is exact, street-level, neighborhood-level, or a fallback based on the city.",
+    ],
+    metrics: [
+      { label: "Product type", value: "Permanent rental radar" },
+      { label: "Role", value: "Full-stack product engineering" },
+      { label: "Visible listings", value: "90+ normalized rentals" },
+      { label: "Quality", value: "88 automated tests passing" },
+    ],
+    outcomes: [
+      "Responsive dashboard with multi-zone search, filters, listing cards, shortlist states, and map entry points",
+      "Interactive Leaflet/OpenStreetMap radar with grouped pins, radius overlays, and a listing popout for clustered results",
+      "Natural-language search that extracts intent such as property type, bedrooms, budget, amenities, and target area",
+      "Source adapters for public listings, normalization, deduplication, image repair, geocoding, and post-sync quality control",
+      "Visual confidence states for exact, approximate, neighborhood, and fallback locations so the product does not overstate precision",
+    ],
+    caption:
+      "The opening dashboard keeps zones, filters, product positioning, and normalized listings in one place, making the search feel like a decision tool rather than another raw property feed.",
+    groups: [
+      {
+        label: "Frontend",
+        items: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+      },
+      {
+        label: "Backend",
+        items: ["API routes", "Prisma", "SQLite", "Zod"],
+      },
+      {
+        label: "Mapping",
+        items: ["Leaflet", "OpenStreetMap", "Geocoding", "Location confidence"],
+      },
+      {
+        label: "Pipeline",
+        items: ["Cheerio", "Playwright", "Adapters", "Vitest", "Playwright E2E"],
+      },
+    ],
+    deepDives: [
+      {
+        kicker: "Product Problem",
+        title: "From scattered listings to one decision surface",
+        body: [
+          "Permanent rental search in Argentina is fragmented. Listings appear across portals, local agencies, independent sites, and social channels, often with missing fields, inconsistent addresses, broken images, or duplicated posts.",
+          "alqag turns that scattered input into a focused interface for comparing real options: search by zone, filter by constraints, inspect the map, favorite or hide listings, and keep a shortlist of properties worth contacting.",
+        ],
+        points: [
+          "Multi-zone search across Alta Gracia, Villa Carlos Paz, Anisacate, La Bolsa, Cordoba, and nearby areas",
+          "Filters for price, currency, bedrooms, expenses, property type, favorites, hidden listings, and likely owner-direct posts",
+          "Decision states for favorites, hidden items, contacted properties, scheduled visits, and discarded options",
+        ],
+      },
+      {
+        kicker: "Data Pipeline",
+        title: "Adapters, normalization, and post-sync quality",
+        body: [
+          "The data layer is organized around source adapters so new real estate sources can be added without changing the core domain. Each sync normalizes listings, repairs image references, enriches detail fields, and deduplicates repeated properties.",
+          "A post-sync quality pass hides stale or low-signal results, separates temporary rentals from permanent housing, and keeps the dataset useful without relying on manual cleanup.",
+        ],
+        points: [
+          "Responsible scraping from public sources without bypassing logins, captchas, or restrictions",
+          "Deduplication by URL and similarity signals",
+          "Automated image validation and repair",
+        ],
+      },
+      {
+        kicker: "Map Model",
+        title: "Useful pins without pretending every address is exact",
+        body: [
+          "A rental can still be useful even when the source does not provide a precise coordinate. The platform uses fallback geocoding and classifies each result by confidence level so the map stays comprehensive and honest.",
+          "Grouped pins and radius overlays help compare neighborhoods and nearby areas, while the selected-zone popout surfaces the relevant listings directly over the map.",
+        ],
+        points: [
+          "Exact, street, neighborhood, and city fallback confidence levels",
+          "Clustered map results with listing previews",
+          "Radius-based search for multiple active zones",
+        ],
+      },
+      {
+        kicker: "Smart Search",
+        title: "Natural language translated into usable filters",
+        body: [
+          "The smart search layer supports queries such as 'house with 2 bedrooms and a patio under 800000 near Anisacate' and translates the user intent into structured filters.",
+          "That makes the experience feel closer to describing a move than configuring a database query, while still keeping the resulting filters visible and editable.",
+        ],
+      },
+      {
+        kicker: "Quality",
+        title: "Tested around the messy parts of real estate data",
+        body: [
+          "The test suite focuses on the fragile parts of the product: filtering, distance calculations, geocoding behavior, smart search extraction, image handling, metadata, and source pipeline logic.",
+          "The result is a local MVP that remains easy to iterate while still treating data quality as a product feature.",
+        ],
+        points: [
+          "88 automated tests passing",
+          "Production build validated",
+          "1920x1080 documentation screenshots captured for the portfolio",
+        ],
+      },
+    ],
+    image: alqagDashboardImage,
+    imageAlt: "alqag dashboard with multi-zone search filters and permanent rental listings",
+    imagePosition: "center top",
+    imageFit: "contain",
+    screenshots: [
+      {
+        src: alqagMapPopoutImage,
+        alt: "alqag map modal with three rental results in the selected zone popout",
+        caption: "Interactive map with grouped pins and a selected-zone popout showing three rental results.",
+        variant: "featured",
+      },
+      {
+        src: alqagSmartSearchImage,
+        alt: "alqag smart search converting a natural-language rental query into filters",
+        caption: "Natural-language search translated into structured filters for bedrooms, budget, property type, and area.",
+        variant: "wide",
+      },
+      {
+        src: alqagListingsImage,
+        alt: "alqag listing grid with normalized rental cards, prices, images, and badges",
+        caption: "Normalized listing grid with images, prices, location confidence, freshness badges, and hide/favorite actions.",
+        variant: "wide",
+      },
+    ],
+  },
+};
 
 const expertiseTopItems = [
   "/ SOFTWARE ENGINEERING",
@@ -779,6 +1292,22 @@ function HomePage() {
   const aboutGlowPaused = aboutGlowHasStarted && !isScrollIdle;
   const worksLineIndicator = progressWindow(worksProgress, 0.08, 0.94, easeOutCubic);
   const worksBackgroundLight = progressWindow(worksProgress, 0.02, 0.96, easeOutCubic);
+  const worksRevealLeadIn = 0.08;
+  const worksRevealStep = 0.22;
+  const worksRevealWindow = 0.16;
+  let activeWorksIndex = -1;
+
+  for (let index = 0; index < worksDeckCards.length; index += 1) {
+    const stepStart = worksRevealLeadIn + index * worksRevealStep;
+
+    if (worksProgress >= stepStart - worksRevealWindow * 0.12) {
+      activeWorksIndex = index;
+    }
+  }
+
+  if (worksProgress < worksRevealLeadIn * 0.75) {
+    activeWorksIndex = -1;
+  }
   const expertiseLineIndicator = progressWindow(
     expertiseProgress,
     0.08,
@@ -805,6 +1334,26 @@ function HomePage() {
   const stageStyle = {
     "--hero-progress": progress.toFixed(4),
   } as CSSProperties;
+
+  const scrollToWorksCard = (index: number) => {
+    const section = worksSequenceRef.current;
+
+    if (!section) {
+      return;
+    }
+
+    const totalDistance = Math.max(section.offsetHeight - window.innerHeight, 1);
+    const sectionTop = window.scrollY + section.getBoundingClientRect().top;
+    const targetProgress = clamp01(
+      worksRevealLeadIn + index * worksRevealStep + worksRevealWindow * 0.92
+    );
+
+    window.scrollTo({
+      top: sectionTop + totalDistance * targetProgress,
+      left: 0,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <main className="portfolio-page">
@@ -1164,67 +1713,99 @@ function HomePage() {
           }
         >
           <div className="works-stage__surface">
-            <div className="works-side-ui" aria-hidden="true">
+            <nav className="works-side-ui" aria-label="Works navigation">
               <span className="works-side-ui__label">03 / WORKS</span>
-              <span className="works-side-ui__line">
-                <span
-                  className="works-side-ui__line-fill"
-                  style={{
-                    transform: `scaleY(${mix(0.08, 1, worksLineIndicator)})`,
-                  }}
-                />
-              </span>
-            </div>
+              <div className="works-side-ui__controls">
+                <span className="works-side-ui__line" aria-hidden="true">
+                  <span
+                    className="works-side-ui__line-fill"
+                    style={{
+                      transform: `scaleY(${mix(0.08, 1, worksLineIndicator)})`,
+                    }}
+                  />
+                </span>
+
+                <div className="works-side-ui__steps">
+                  {worksDeckCards.map((card, index) => {
+                    const isActive = index === activeWorksIndex;
+
+                    return (
+                      <button
+                        className={`works-side-ui__step${
+                          isActive ? " works-side-ui__step--active" : ""
+                        }`}
+                        type="button"
+                        key={`works-step-${card.id}`}
+                        onClick={() => scrollToWorksCard(index)}
+                        aria-pressed={isActive}
+                        aria-label={`Scroll to ${card.title}`}
+                      >
+                        <span className="works-side-ui__step-marker" aria-hidden="true" />
+                        <span className="works-side-ui__step-index">{`0${index + 1}`}</span>
+                        <span className="works-side-ui__step-title">{card.title}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </nav>
 
             <div className="works-deck" aria-label="Selected project stack">
-              {worksCards.map((card, index) => {
-                const revealStart = 0.08 + index * 0.18;
-                const revealEnd = revealStart + 0.24;
+              {worksDeckCards.map((card, index) => {
+                const pose =
+                  worksStackPoses[index] ??
+                  worksStackPoses[worksStackPoses.length - 1];
+                const stepStart = worksRevealLeadIn + index * worksRevealStep;
+                const stepEnd = stepStart + worksRevealWindow;
                 const reveal = progressWindow(
                   worksProgress,
-                  revealStart,
-                  revealEnd,
+                  stepStart,
+                  stepEnd,
                   easeOutQuint
+                );
+                const settle = progressWindow(
+                  worksProgress,
+                  stepStart + worksRevealWindow * 0.68,
+                  stepEnd + worksRevealWindow * 0.16,
+                  easeOutCubic
                 );
                 const contentReveal = progressWindow(
                   worksProgress,
-                  revealStart + 0.06,
-                  revealEnd + 0.08,
+                  stepStart + worksRevealWindow * 0.34,
+                  stepEnd + worksRevealWindow * 0.08,
                   easeOutCubic
                 );
-                const drift = progressWindow(
+                const shadowReveal = progressWindow(
                   worksProgress,
-                  revealEnd,
-                  1,
-                  easeInOutCubic
+                  stepStart + worksRevealWindow * 0.12,
+                  stepEnd + worksRevealWindow * 0.12,
+                  easeOutCubic
                 );
-
-                const finalOffsetX = [-0.9, 0.9, 0][index] ?? 0;
-                const finalOffsetY = [-5.4, -0.9, 3.5][index] ?? 0;
-                const finalRotate = [-4.2, 2.2, -1][index] ?? 0;
-                const finalScale = [0.89, 0.945, 1][index] ?? 1;
-                const entryOffsetY = 18 + index * 2.6;
-                const entryRotate = finalRotate * 1.8;
-                const liftDrift = [-1.1, -0.5, 0.3][index] ?? 0;
-                const mediaShift = mix(2.5, -2.2 + index * 0.9, progressWindow(worksProgress, revealStart, 1));
+                const translateX = mix(pose.entryX, pose.finalX, reveal);
+                const translateY =
+                  mix(pose.entryY, pose.finalY - 0.85, reveal) +
+                  mix(1.4, 0, settle);
+                const rotate = mix(pose.entryRotate, pose.finalRotate, reveal);
+                const scale = mix(0.78, pose.finalScale, reveal);
+                const blur = mix(22, 0, reveal);
+                const mediaShift = mix(
+                  pose.mediaShiftStart,
+                  pose.mediaShiftEnd,
+                  reveal
+                );
+                const isInteractive =
+                  index === activeWorksIndex && contentReveal > 0.72;
 
                 const cardStyle = {
-                  zIndex: index + 1,
-                  opacity: mix(0, 1, reveal),
-                  filter: `blur(${mix(18, 0, reveal)}px)`,
-                  transform: `translate3d(calc(-50% + ${mix(finalOffsetX * 0.35, finalOffsetX, reveal)}rem), calc(-50% + ${mix(
-                    entryOffsetY,
-                    finalOffsetY + liftDrift * drift,
-                    reveal
-                  )}rem), 0) rotate(${mix(entryRotate, finalRotate, reveal)}deg) scale(${mix(
-                    0.82,
-                    finalScale,
-                    reveal
-                  )})`,
-                  boxShadow: `0 ${mix(0.4, 1.9, reveal)}rem ${mix(1.8, 5.2, reveal)}rem rgba(0, 0, 0, ${mix(
-                    0.1,
+                  zIndex: 20 + index * 10,
+                  opacity: reveal,
+                  filter: `blur(${blur}px)`,
+                  pointerEvents: isInteractive ? "auto" : "none",
+                  transform: `translate3d(calc(-50% + ${translateX}rem), calc(-50% + ${translateY}rem), 0) rotate(${rotate}deg) scale(${scale})`,
+                  boxShadow: `0 ${mix(0.4, 2.8, shadowReveal)}rem ${mix(1.2, 6.2, shadowReveal)}rem rgba(0, 0, 0, ${mix(
+                    0.08,
                     0.34,
-                    reveal
+                    shadowReveal
                   )})`,
                 } satisfies CSSProperties;
 
@@ -1234,6 +1815,8 @@ function HomePage() {
                       className="works-card__media"
                       style={{
                         backgroundImage: card.media,
+                        backgroundPosition: card.mediaPosition ?? "center",
+                        backgroundSize: card.mediaSize ?? undefined,
                         transform: `translate3d(0, ${mediaShift}%, 0) scale(${mix(
                           1.08,
                           1.02,
@@ -1258,20 +1841,52 @@ function HomePage() {
                       }}
                     >
                       <div className="works-card__topline">
-                        <p className="works-card__kicker">{card.kicker}</p>
+                        <div className="works-card__topline-copy">
+                          <p className="works-card__kicker">{card.kicker}</p>
+                          {card.liveUrl ? (
+                            <a
+                              className="works-card__live"
+                              href={card.liveUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              tabIndex={isInteractive ? 0 : -1}
+                              aria-label={`Open live ${card.title} site`}
+                            >
+                              {card.liveLabel ?? "Live product"}
+                            </a>
+                          ) : null}
+                        </div>
                         <p className="works-card__index">{`0${index + 1}`}</p>
                       </div>
 
-                      <div className="works-card__copy">
-                        <h2>{card.title}</h2>
-                        <p>{card.summary}</p>
-                      </div>
+                      <div className="works-card__panel">
+                        <div className="works-card__panel-inner">
+                          <div className="works-card__copy">
+                            <h2>{card.title}</h2>
+                            <p>{card.summary}</p>
+                          </div>
 
-                      <ul className="works-card__points" aria-label={`${card.title} highlights`}>
-                        {card.points.map((point) => (
-                          <li key={point}>{point}</li>
-                        ))}
-                      </ul>
+                          <div className="works-card__footer">
+                            <ul className="works-card__points" aria-label={`${card.title} highlights`}>
+                              {card.points.map((point) => (
+                                <li key={point}>{point}</li>
+                              ))}
+                            </ul>
+
+                            <Link
+                              className="works-card__route"
+                              to={card.href}
+                              aria-label={`Open ${card.title} project details`}
+                              tabIndex={isInteractive ? 0 : -1}
+                            >
+                              <span>{card.routeLabel}</span>
+                              <span className="works-card__route-icon" aria-hidden="true">
+                                ↗
+                              </span>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </article>
                 );
@@ -1473,6 +2088,474 @@ function HomePage() {
   );
 }
 
+function ProjectShowcase({
+  detail,
+  project,
+}: {
+  detail: ProjectDetail;
+  project: WorkCard;
+}) {
+  const { ref, progress } = useViewportProgress<HTMLElement>(0.96, -0.06);
+  const reveal = progressWindow(progress, 0, 0.28, easeOutCubic);
+  const captionReveal = progressWindow(progress, 0.12, 0.32, easeOutCubic);
+
+  const mediaStyle = {
+    objectPosition: detail.imagePosition ?? "center",
+    objectFit: detail.imageFit ?? "cover",
+    transform: `scale(${mix(1.035, 1, reveal)}) translate3d(0, ${mix(0.7, -1.2, progress)}rem, 0)`,
+  };
+
+  return (
+    <figure
+      className="project-page__showcase"
+      ref={ref}
+      style={{
+        opacity: mix(0.78, 1, reveal),
+        filter: `blur(${mix(7, 0, reveal)}px)`,
+        transform: `translate3d(0, ${mix(1.2, 0, reveal)}rem, 0)`,
+      }}
+    >
+      {detail.image ? (
+        <img
+          className="project-page__showcase-image"
+          src={detail.image}
+          alt={detail.imageAlt ?? project.title}
+          style={mediaStyle}
+        />
+      ) : (
+        <div
+          className="project-page__showcase-fill"
+          aria-hidden="true"
+          style={{
+            backgroundImage: project.media,
+            backgroundPosition: project.mediaPosition ?? "center",
+            transform: mediaStyle.transform,
+          }}
+        />
+      )}
+
+      <figcaption
+        className="project-page__showcase-caption"
+        style={{
+          opacity: mix(0.72, 1, captionReveal),
+          transform: `translate3d(0, ${mix(0.45, 0, captionReveal)}rem, 0)`,
+        }}
+      >
+        {detail.caption ??
+          "The interface direction focuses on operational clarity, readable triage, and strong context under pressure."}
+      </figcaption>
+    </figure>
+  );
+}
+
+function ProjectGallery({ detail, project }: { detail: ProjectDetail; project: WorkCard }) {
+  const { ref, progress } = useViewportProgress<HTMLElement>(0.92, 0.3);
+  const reveal = progressWindow(progress, 0, 0.62, easeOutCubic);
+  const galleryStyle = detail.galleryStyle ?? "grid";
+
+  if (!detail.screenshots?.length) {
+    return null;
+  }
+
+  return (
+    <section
+      className={`project-page__gallery project-page__gallery--${galleryStyle}`}
+      ref={ref}
+      aria-label={`${project.title} screenshots`}
+      style={{
+        opacity: mix(0.72, 1, reveal),
+        filter: `blur(${mix(6, 0, reveal)}px)`,
+        transform: `translate3d(0, ${mix(1, 0, reveal)}rem, 0)`,
+      }}
+    >
+      {detail.galleryTitle || detail.galleryDescription ? (
+        <div className="project-page__gallery-intro">
+          {detail.galleryTitle ? <h2>{detail.galleryTitle}</h2> : null}
+          {detail.galleryDescription ? <p>{detail.galleryDescription}</p> : null}
+        </div>
+      ) : null}
+
+      <div className="project-page__gallery-grid">
+        {detail.screenshots.map((screenshot, index) => (
+          <figure
+            className={`project-page__gallery-item project-page__gallery-item--${
+              screenshot.variant ?? "wide"
+            }`}
+            key={screenshot.src}
+            style={{
+              transform: `translate3d(0, ${mix(0.8 + index * 0.28, 0, reveal)}rem, 0)`,
+            }}
+          >
+            <img src={screenshot.src} alt={screenshot.alt} loading="lazy" decoding="async" />
+            <figcaption>{screenshot.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ProjectStatementParagraph({
+  index,
+  paragraph,
+}: {
+  index: number;
+  paragraph: string;
+}) {
+  const { ref, progress } = useViewportProgress<HTMLParagraphElement>(0.92, 0.42);
+  const reveal = progressWindow(progress, index * 0.05, 0.72 + index * 0.05, easeOutCubic);
+
+  return (
+    <p
+      ref={ref}
+      style={{
+        opacity: mix(0.68, 1, reveal),
+        filter: `blur(${mix(5, 0, reveal)}px)`,
+        transform: `translate3d(0, ${mix(0.9, 0, reveal)}rem, 0)`,
+      }}
+    >
+      {paragraph}
+    </p>
+  );
+}
+
+function ProjectProfile({
+  detail,
+  project,
+}: {
+  detail: ProjectDetail;
+  project: WorkCard;
+}) {
+  const { ref, progress } = useViewportProgress<HTMLElement>(0.9, 0.36);
+  const reveal = progressWindow(progress, 0, 0.64, easeOutCubic);
+  const detailReveal = progressWindow(progress, 0.18, 0.82, easeOutCubic);
+
+  return (
+    <section
+      className="project-page__profile"
+      ref={ref}
+      aria-label={`${project.title} operational overview`}
+      style={
+        {
+          "--project-line-progress": reveal,
+        } as CSSProperties
+      }
+    >
+      <div
+        className="project-page__profile-copy"
+        style={{
+          opacity: mix(0.68, 1, reveal),
+          filter: `blur(${mix(5, 0, reveal)}px)`,
+          transform: `translate3d(0, ${mix(0.9, 0, reveal)}rem, 0)`,
+        }}
+      >
+        <p className="project-page__section-kicker">{detail.eyebrow}</p>
+        <h2 className="project-page__section-title">Operational Overview</h2>
+        <p className="project-page__body">
+          A concise view of the operating surface, the stack behind it, and the
+          capabilities that support detection, monitoring, triage, and escalation.
+        </p>
+      </div>
+
+      <div
+        className="project-page__profile-detail"
+        style={{
+          opacity: mix(0.72, 1, detailReveal),
+          transform: `translate3d(0, ${mix(0.8, 0, detailReveal)}rem, 0)`,
+        }}
+      >
+        {detail.groups ? (
+          <section className="project-page__spec-section">
+            <p className="project-page__section-kicker">Technology Stack</p>
+            <div className="project-page__info-groups">
+              {detail.groups.map((group) => (
+                <div className="project-page__info-group" key={group.label}>
+                  <p className="project-page__info-label">{group.label}</p>
+                  <div className="project-page__chips">
+                    {group.items.map((item) => (
+                      <span className="project-page__chip" key={item}>
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="project-page__spec-section">
+          <p className="project-page__section-kicker">Core Surfaces</p>
+          <ul className="project-page__list">
+            {project.points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="project-page__spec-section">
+          <p className="project-page__section-kicker">Implemented Capabilities</p>
+          <ul className="project-page__list">
+            {detail.outcomes.map((outcome) => (
+              <li key={outcome}>{outcome}</li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </section>
+  );
+}
+
+function ProjectDetailSection({
+  index,
+  section,
+}: {
+  index: number;
+  section: ProjectDeepDive;
+}) {
+  const { ref, progress } = useViewportProgress<HTMLElement>(0.9, 0.34);
+  const reveal = progressWindow(progress, 0, 0.62, easeOutCubic);
+
+  return (
+    <section
+      className="project-page__detail-section"
+      ref={ref}
+      style={
+        {
+          "--project-line-progress": reveal,
+        } as CSSProperties
+      }
+    >
+      <div
+        className="project-page__detail-index"
+        style={{
+          opacity: mix(0.38, 1, reveal),
+          transform: `translate3d(0, ${mix(0.7, 0, reveal)}rem, 0)`,
+        }}
+      >
+        {`0${index + 1}`}
+      </div>
+      <div className="project-page__detail-copy">
+        <p
+          className="project-page__section-kicker"
+          style={{
+            opacity: mix(0.7, 1, reveal),
+            transform: `translate3d(0, ${mix(0.55, 0, reveal)}rem, 0)`,
+          }}
+        >
+          {section.kicker}
+        </p>
+        <h2
+          className="project-page__section-title"
+          style={{
+            opacity: mix(0.7, 1, reveal),
+            filter: `blur(${mix(5, 0, reveal)}px)`,
+            transform: `translate3d(0, ${mix(0.8, 0, reveal)}rem, 0)`,
+          }}
+        >
+          {section.title}
+        </h2>
+        {section.body.map((paragraph) => (
+          <p
+            className="project-page__body"
+            key={paragraph}
+            style={{
+              opacity: mix(0.74, 1, reveal),
+              transform: `translate3d(0, ${mix(0.65, 0, reveal)}rem, 0)`,
+            }}
+          >
+            {paragraph}
+          </p>
+        ))}
+
+        {section.points ? (
+          <ul
+            className="project-page__list project-page__list--compact"
+            style={{
+              opacity: mix(0.74, 1, reveal),
+              transform: `translate3d(0, ${mix(0.6, 0, reveal)}rem, 0)`,
+            }}
+          >
+            {section.points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function ProjectDetails({ detail, project }: { detail: ProjectDetail; project: WorkCard }) {
+  const { ref, progress } = useViewportProgress<HTMLElement>(0.94, 0.42);
+
+  if (!detail.deepDives) {
+    return null;
+  }
+
+  return (
+    <section
+      className="project-page__details"
+      ref={ref}
+      aria-label={`${project.title} project details`}
+      style={
+        {
+          "--project-line-progress": progressWindow(progress, 0, 0.72, easeOutCubic),
+        } as CSSProperties
+      }
+    >
+      {detail.deepDives.map((section, index) => (
+        <ProjectDetailSection index={index} key={section.title} section={section} />
+      ))}
+    </section>
+  );
+}
+
+function ProjectPage() {
+  const { projectId } = useParams();
+  const project = worksCards.find((item) => item.id === projectId);
+  const detail = projectId ? projectDetails[projectId] : undefined;
+
+  if (!project || !detail) {
+    return (
+      <main className="project-page">
+        <section className="project-page__hero">
+          <Navbar />
+
+          <div className="project-page__hero-grid">
+            <Link className="project-page__back" to="/#works">
+              <svg
+                className="project-page__back-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+                />
+              </svg>
+              <span>Back To Works</span>
+            </Link>
+
+            <div className="project-page__hero-center">
+              <p className="project-page__tag">
+                <span>(PROJECT</span>
+                <span className="project-page__tag-dot">.</span>
+                <span>)</span>
+              </p>
+              <h1 className="project-page__title">This project page is not available.</h1>
+              <p className="project-page__subtitle">
+                The requested project could not be found in the current site build.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  const gallery = <ProjectGallery detail={detail} project={project} />;
+  const showGalleryAfterStatement = detail.galleryPlacement === "after-statement";
+
+  return (
+    <main className={`project-page project-page--${project.id}`}>
+      <section className="project-page__hero">
+        <Navbar />
+
+        <div className="project-page__side-ui" aria-hidden="true">
+          <span className="project-page__side-label">03 / PROJECT</span>
+          <span className="project-page__side-line" />
+        </div>
+
+        <div className="project-page__hero-grid">
+          <Link className="project-page__back" to="/#works">
+            <svg
+              className="project-page__back-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+              />
+            </svg>
+            <span>Back To Works</span>
+          </Link>
+
+          <div className="project-page__hero-center">
+            <p className="project-page__tag">
+              <span>(PROJECT</span>
+              <span className="project-page__tag-dot">.</span>
+              <span>)</span>
+            </p>
+
+            <h1 className="project-page__title">
+              <span className="project-page__title-line">{detail.title}</span>
+              <span className="project-page__title-line project-page__title-line--accent">
+                {project.kicker}
+              </span>
+            </h1>
+
+            <p className="project-page__subtitle">{detail.lead}</p>
+
+            {project.liveUrl ? (
+              <div className="project-page__actions">
+                <a
+                  className="project-page__external-link"
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Open live ${project.title} site`}
+                >
+                  <span>{project.liveLabel ?? "Live Product"}</span>
+                  <span className="project-page__external-icon" aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </div>
+            ) : null}
+
+            <dl className="project-page__metrics" aria-label={`${project.title} metrics`}>
+              {detail.metrics.map((metric) => (
+                <div className="project-page__metric" key={metric.label}>
+                  <dt className="project-page__metric-label">{metric.label}</dt>
+                  <dd className="project-page__metric-value">{metric.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section className="project-page__content">
+        <div className="project-page__shell">
+          <ProjectShowcase detail={detail} project={project} />
+          {showGalleryAfterStatement ? null : gallery}
+
+          <section className="project-page__statement" aria-label={`${project.title} overview`}>
+            {detail.body.map((paragraph, index) => (
+              <ProjectStatementParagraph index={index} key={paragraph} paragraph={paragraph} />
+            ))}
+          </section>
+
+          {showGalleryAfterStatement ? gallery : null}
+
+          <ProjectProfile detail={detail} project={project} />
+          <ProjectDetails detail={detail} project={project} />
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function AboutPage() {
   const { ref: aboutJourneyRef, progress: aboutJourneyProgress } =
     useSectionProgress<HTMLElement>();
@@ -1496,7 +2579,20 @@ function AboutPage() {
 
         <div className="about-page__hero-grid">
           <Link className="about-page__hero-back" to="/">
-            <span className="about-page__hero-back-icon" aria-hidden="true" />
+            <svg
+              className="about-page__hero-back-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+              />
+            </svg>
             <span>Back</span>
           </Link>
 
@@ -1702,6 +2798,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/projects/:projectId" element={<ProjectPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </>
