@@ -20,6 +20,7 @@ import portraitImage from "./assets/portrait.jfif";
 import proximoLogoWhite from "./assets/proximo-logo-white.png";
 import signatureImage from "./assets/signature-clean.png";
 import utnLogoClean from "./assets/utn-logo-clean.png";
+import { ContactForm, contactEmail } from "./components/ContactForm";
 import { Navbar } from "./components/Navbar";
 import { SeoManager } from "./components/Seo";
 import { PortfolioCasePage } from "./portfolio/PortfolioCasePage";
@@ -998,20 +999,6 @@ const expertiseBottomStack = [
   "DOCKER",
   "GIT",
   "AWS",
-] as const;
-
-const contactMetaItems = [
-  "/ SOFTWARE ENGINEERING",
-  "/ BACKEND SYSTEMS",
-  "/ PRODUCT TEAMS",
-  "/ REMOTE / HYBRID",
-] as const;
-
-const contactServicePills = [
-  "/ CLEAN ARCHITECTURE",
-  "/ API DESIGN",
-  "/ BACKEND ENGINEERING",
-  "/ SYSTEM INTEGRATION",
 ] as const;
 
 const aboutJourneyItems: AboutJourneyItem[] = [
@@ -2002,8 +1989,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="contact-section" id="contact" ref={contactSectionRef}>
-        <h2 className="sr-only">Contact Lautaro Cortez for software engineering roles</h2>
+      <section className="contact-section" id="contact" ref={contactSectionRef} aria-labelledby="contact-title">
         <div className="contact-side-ui" aria-hidden="true">
           <span className="contact-side-ui__label">05 / CONTACT</span>
           <span className="contact-side-ui__line">
@@ -2025,23 +2011,9 @@ function HomePage() {
               transform: `translate3d(0, ${mix(2.2, 0, contactIntroReveal)}rem, 0)`,
             }}
           >
-            <p className="contact-intro__eyebrow">CONTACT / CORTEZ</p>
-            <h2 className="contact-intro__title">
-              LET&apos;S TALK ABOUT THE SYSTEM BENEATH THE PRODUCT.
-            </h2>
-            <p className="contact-intro__body">
-              If you&apos;re hiring for a software engineering role, building out a backend
-              team, or looking for someone who cares about clean architecture and durable
-              systems, I&apos;d love to hear what you&apos;re building and where I could add value.
-            </p>
-
-            <div className="contact-intro__meta" aria-label="Contact metadata">
-              {contactMetaItems.map((item) => (
-                <span className="contact-intro__meta-item" key={item}>
-                  {item}
-                </span>
-              ))}
-            </div>
+            <h2 className="contact-intro__title" id="contact-title">Let&apos;s talk.</h2>
+            <p className="contact-intro__body">Open to engineering roles and collaborations.</p>
+            <a className="contact-intro__email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
           </div>
 
           <div
@@ -2052,56 +2024,7 @@ function HomePage() {
               transform: `translate3d(0, ${mix(2.8, 0, contactFormReveal)}rem, 0)`,
             }}
           >
-            <form className="contact-form" action="#" method="post">
-              <div className="contact-form__grid">
-                <label className="contact-field">
-                  <span className="contact-field__label">NAME</span>
-                  <input className="contact-field__input" type="text" name="name" placeholder="Your name" />
-                </label>
-
-                <label className="contact-field">
-                  <span className="contact-field__label">EMAIL</span>
-                  <input className="contact-field__input" type="email" name="email" placeholder="you@example.com" />
-                </label>
-
-                <label className="contact-field">
-                  <span className="contact-field__label">COMPANY / TEAM</span>
-                  <input className="contact-field__input" type="text" name="company" placeholder="Company, product, or team" />
-                </label>
-
-                <label className="contact-field">
-                  <span className="contact-field__label">ROLE / FOCUS</span>
-                  <input className="contact-field__input" type="text" name="focus" placeholder="Software engineer, backend, platform..." />
-                </label>
-              </div>
-
-              <label className="contact-field contact-field--message">
-                <span className="contact-field__label">MESSAGE</span>
-                <textarea
-                  className="contact-field__input contact-field__input--textarea"
-                  name="details"
-                  rows={6}
-                  placeholder="Tell me about the opportunity, team, or system you have in mind."
-                />
-              </label>
-
-              <div className="contact-form__services" aria-label="Service areas">
-                {contactServicePills.map((item) => (
-                  <span className="contact-form__service-pill" key={item}>
-                    {item}
-                  </span>
-                ))}
-              </div>
-
-              <div className="contact-form__footer">
-                <p className="contact-form__note">
-                  Open to engineering roles, strong product teams, and thoughtful collaboration.
-                </p>
-                <button className="contact-form__submit" type="button">
-                  START CONVERSATION
-                </button>
-              </div>
-            </form>
+            <ContactForm />
           </div>
         </div>
 
