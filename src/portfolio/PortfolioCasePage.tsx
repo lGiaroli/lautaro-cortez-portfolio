@@ -1,27 +1,31 @@
-import { Link } from "react-router-dom";
 import { Navbar } from "../components/Navbar";
+import { LocalizedLink, useLocale } from "../i18n/locale";
 import { caseGroupNames, type CaseStudy } from "./caseTypes";
+import { caseGroupNamesEs } from "./cases.es";
 import { LateralEvidence } from "./LateralEvidence";
 import { PortfolioGallery } from "./PortfolioGallery";
 import { V6Evidence } from "./V6Evidence";
 import "./portfolio.css";
 
 export function PortfolioCasePage({ study }: { study: CaseStudy }) {
+  const locale = useLocale();
+  const groupNames = locale === "es" ? caseGroupNamesEs : caseGroupNames;
+
   return (
     <main className="case-page">
       <section className="case-heading" aria-labelledby="case-title">
         <Navbar />
         <div className="case-shell case-heading__inner">
-          <Link className="case-back" to="/work">← All work</Link>
+          <LocalizedLink className="case-back" to="/work">{locale === "es" ? "← Todos los trabajos" : "← All work"}</LocalizedLink>
           <div className="case-heading__intro">
-            <p className="case-kicker">{caseGroupNames[study.group]} <span>·</span> {study.status}</p>
+            <p className="case-kicker">{groupNames[study.group]} <span>·</span> {study.status}</p>
             <h1 id="case-title">{study.title}</h1>
             <p className="case-heading__subtitle">{study.subtitle}</p>
             <p className="case-heading__summary">{study.summary}</p>
           </div>
           <div className="case-heading__details">
-            <p><strong>Role</strong> {study.role}</p>
-            {study.stack?.length ? <p><strong>Tools</strong> {study.stack.join(" · ")}</p> : null}
+            <p><strong>{locale === "es" ? "Rol" : "Role"}</strong> {study.role}</p>
+            {study.stack?.length ? <p><strong>{locale === "es" ? "Tecnologías" : "Tools"}</strong> {study.stack.join(" · ")}</p> : null}
           </div>
           {study.links?.length ? (
             <div className="case-heading__links">
@@ -32,10 +36,10 @@ export function PortfolioCasePage({ study }: { study: CaseStudy }) {
       </section>
 
       <div className="case-shell case-body">
-        <nav className="case-index" aria-label="On this page">
-          {study.gallery?.length ? <Link to="#product-gallery">Product gallery</Link> : null}
+        <nav className="case-index" aria-label={locale === "es" ? "En esta página" : "On this page"}>
+          {study.gallery?.length ? <LocalizedLink to="#product-gallery">{locale === "es" ? "Galería del producto" : "Product gallery"}</LocalizedLink> : null}
           {study.sections.map((section) => (
-            <Link key={section.id} to={`#${section.id}`}>{section.title}</Link>
+            <LocalizedLink key={section.id} to={`#${section.id}`}>{section.title}</LocalizedLink>
           ))}
         </nav>
 
@@ -62,7 +66,7 @@ export function PortfolioCasePage({ study }: { study: CaseStudy }) {
         ))}
 
         <footer className="case-footer">
-          <Link className="case-back" to="/work">← All work</Link>
+          <LocalizedLink className="case-back" to="/work">{locale === "es" ? "← Todos los trabajos" : "← All work"}</LocalizedLink>
         </footer>
       </div>
     </main>

@@ -1,11 +1,12 @@
 import type { CSSProperties } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { LocalizedLink, localizedPath, useLocale } from "../i18n/locale";
 
 const navItems = [
-  { to: "/about", label: "ABOUT" },
-  { to: "/work", label: "WORKS" },
-  { to: "/#expertise", label: "EXPERTISE" },
-  { to: "/#contact", label: "CONTACT" },
+  { to: "/about", en: "ABOUT", es: "SOBRE MÍ" },
+  { to: "/work", en: "WORKS", es: "PROYECTOS" },
+  { to: "/#expertise", en: "EXPERTISE", es: "ESPECIALIDAD" },
+  { to: "/#contact", en: "CONTACT", es: "CONTACTO" },
 ];
 
 function AnimatedLabel({ label }: { label: string }) {
@@ -41,19 +42,35 @@ function AnimatedLabel({ label }: { label: string }) {
 }
 
 export function Navbar() {
+  const locale = useLocale();
+  const { pathname, search, hash } = useLocation();
+  const otherLocale = locale === "en" ? "es" : "en";
+  const switchLabel = otherLocale === "es" ? "Leer en español" : "Read in English";
+
   return (
     <header className="site-header">
-      <Link className="nav-link brand" to="/">
+      <LocalizedLink className="nav-link brand" to="/">
         <AnimatedLabel label="CORTEZ" />
-      </Link>
+      </LocalizedLink>
 
-      <nav className="site-nav" aria-label="Principal">
+      <nav className="site-nav" aria-label={locale === "es" ? "Navegación principal" : "Main navigation"}>
         {navItems.map((item) => (
-          <Link className="nav-link" to={item.to} key={item.to}>
-            <AnimatedLabel label={item.label} />
-          </Link>
+          <LocalizedLink className="nav-link" to={item.to} key={item.to}>
+            <AnimatedLabel label={item[locale]} />
+          </LocalizedLink>
         ))}
       </nav>
+
+      <Link
+        className="nav-link nav-language"
+        to={localizedPath(pathname + search + hash, otherLocale)}
+        lang={otherLocale}
+        hrefLang={otherLocale}
+        aria-label={switchLabel}
+        title={switchLabel}
+      >
+        {otherLocale.toUpperCase()}
+      </Link>
     </header>
   );
 }

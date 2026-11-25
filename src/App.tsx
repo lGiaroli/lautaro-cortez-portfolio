@@ -1,6 +1,6 @@
 ﻿import type { CSSProperties } from "react";
 import { startTransition, useEffect, useRef, useState } from "react";
-import { Link, Route, Routes, useLocation, useParams } from "react-router-dom";
+import { Route, Routes, useLocation, useParams } from "react-router-dom";
 import alqagDashboardImage from "./assets/alqag-dashboard.png";
 import alqagListingsImage from "./assets/alqag-listings.png";
 import alqagMapPopoutImage from "./assets/alqag-map-popout.png";
@@ -15,7 +15,6 @@ import lateralTimeAdminImage from "./assets/lateral-time-admin-light.png";
 import lateralTimeDashboardImage from "./assets/lateral-time-dashboard-light.png";
 import lateralTimeInsightsImage from "./assets/lateral-time-insights-light.png";
 import lateralTimeTimesheetImage from "./assets/lateral-time-timesheet-light.png";
-import resumePdf from "./assets/Lautaro_Cortez_-_Software_Engineer.pdf";
 import portraitImage from "./assets/portrait.jfif";
 import proximoLogoWhite from "./assets/proximo-logo-white.png";
 import signatureImage from "./assets/signature-clean.png";
@@ -23,8 +22,11 @@ import utnLogoClean from "./assets/utn-logo-clean.png";
 import { ContactForm, contactEmail } from "./components/ContactForm";
 import { Navbar } from "./components/Navbar";
 import { SeoManager } from "./components/Seo";
+import { LocalizedLink as Link, useLocale, useText, type Locale } from "./i18n/locale";
+import { localizeLegacyProjectDetail, localizeWorkCard } from "./i18n/legacyProjects.es";
 import { PortfolioCasePage } from "./portfolio/PortfolioCasePage";
 import { WorkIndex, type WorkEntry } from "./portfolio/WorkIndex";
+import { spanishCaseStudies } from "./portfolio/cases.es";
 import type { CaseStudy } from "./portfolio/caseTypes";
 import { otherCases } from "./portfolio/otherCases";
 import { lateralCases } from "./portfolio/lateralCases";
@@ -70,7 +72,7 @@ type Fragment = {
   endScale: number;
 };
 
-type WorkCard = {
+export type WorkCard = {
   id: string;
   kicker: string;
   title: string;
@@ -110,7 +112,7 @@ type ProjectScreenshot = {
   variant?: "featured" | "wide" | "portrait";
 };
 
-type ProjectDetail = {
+export type ProjectDetail = {
   eyebrow: string;
   title: string;
   lead: string;
@@ -512,7 +514,7 @@ const worksCards: WorkCard[] = [
   },
 ];
 
-const worksDeckCards = ["alqag", "foco-vivo", "lateral-v6"].map((id) => {
+const featuredWorks = ["alqag", "foco-vivo", "lateral-v6"].map((id) => {
   const card = worksCards.find((item) => item.id === id);
 
   if (!card) {
@@ -522,18 +524,29 @@ const worksDeckCards = ["alqag", "foco-vivo", "lateral-v6"].map((id) => {
   return card;
 });
 
-const caseStudies: CaseStudy[] = [lateralV6, ...lateralCases, ...otherCases];
-const workEntries: WorkEntry[] = [
-  ...caseStudies.filter((study) => study.group === "lateral"),
-  ...worksCards.filter((card) => card.id !== lateralV6.id).map((card): WorkEntry => ({
-    id: card.id,
-    group: card.id === "lateral-time" ? "lateral" : "other-works",
-    title: card.title,
-    subtitle: card.kicker,
-    summary: card.summary,
-  })),
-  ...otherCases,
-];
+const caseStudies: Record<Locale, CaseStudy[]> = {
+  en: [lateralV6, ...lateralCases, ...otherCases],
+  es: spanishCaseStudies,
+};
+const localizedWorksCards = { en: worksCards, es: worksCards.map(localizeWorkCard) };
+const worksDeckCards = { en: featuredWorks, es: featuredWorks.map(localizeWorkCard) };
+
+function buildWorkEntries(locale: Locale): WorkEntry[] {
+  const studies = caseStudies[locale];
+  return [
+    ...studies.filter((study) => study.group === "lateral"),
+    ...localizedWorksCards[locale].filter((card) => card.id !== lateralV6.id).map((card): WorkEntry => ({
+      id: card.id,
+      group: card.id === "lateral-time" ? "lateral" : "other-works",
+      title: card.title,
+      subtitle: card.kicker,
+      summary: card.summary,
+    })),
+    ...studies.filter((study) => study.group === "other-works"),
+  ];
+}
+
+const workEntries = { en: buildWorkEntries("en"), es: buildWorkEntries("es") };
 
 const worksStackPoses = [
   {
@@ -972,21 +985,29 @@ const projectDetails: Record<string, ProjectDetail> = {
   },
 };
 
-const expertiseTopItems = [
-  "/ SOFTWARE ENGINEERING",
-  "/ BACK-END DEVELOPMENT",
-  "/ API DESIGN",
-  "/ DATABASE SYSTEMS",
-] as const;
+const expertiseTopItems = {
+  en: ["/ SOFTWARE ENGINEERING", "/ BACK-END DEVELOPMENT", "/ API DESIGN", "/ DATABASE SYSTEMS"],
+  es: ["/ INGENIERÍA DE SOFTWARE", "/ DESARROLLO BACKEND", "/ DISEÑO DE API", "/ BASES DE DATOS"],
+};
 
-const expertisePills: ExpertisePill[] = [
-  { label: "/ MICROSERVICES" },
-  { label: "/ RESTFUL APIS" },
-  { label: "/ BUSINESS LOGIC" },
-  { label: "/ AUTHENTICATION & SECURITY" },
-  { label: "/ DATA PROCESSING" },
-  { label: "/ SYSTEM INTEGRATION" },
-] as const;
+const expertisePills: Record<"en" | "es", ExpertisePill[]> = {
+  en: [
+    { label: "/ MICROSERVICES" },
+    { label: "/ RESTFUL APIS" },
+    { label: "/ BUSINESS LOGIC" },
+    { label: "/ AUTHENTICATION & SECURITY" },
+    { label: "/ DATA PROCESSING" },
+    { label: "/ SYSTEM INTEGRATION" },
+  ],
+  es: [
+    { label: "/ MICROSERVICIOS" },
+    { label: "/ API REST" },
+    { label: "/ LÓGICA DE NEGOCIO" },
+    { label: "/ AUTENTICACIÓN Y SEGURIDAD" },
+    { label: "/ PROCESAMIENTO DE DATOS" },
+    { label: "/ INTEGRACIÓN DE SISTEMAS" },
+  ],
+};
 
 const expertiseBottomStack = [
   "JAVA",
@@ -1049,14 +1070,45 @@ const aboutJourneyItems: AboutJourneyItem[] = [
   },
 ];
 
-const aboutQuoteLines = [
-  "I CREATE SOFTWARE WITH CLARITY, STRUCTURE,",
-  "AND ENOUGH DISCIPLINE TO KEEP COMPLEXITY HONEST.",
-  "CLEAN ARCHITECTURE, RESILIENT BACKEND SYSTEMS,",
-  "AND SOLUTIONS DESIGNED TO AGE WELL.",
-] as const;
+const aboutJourneySpanish: Record<string, Partial<AboutJourneyItem>> = {
+  utn: {
+    title: "Ingeniería en Sistemas",
+    body: "Estudié Ingeniería en Sistemas en la UTN Córdoba. Ahí construí una base de lógica, estructura del software y pensamiento analítico que sigo aplicando al diseñar sistemas.",
+    logoAlt: "Logo de la Universidad Tecnológica Nacional",
+  },
+  ies21: {
+    title: "Diseño gráfico",
+    body: "En IES21 estudié composición, jerarquía visual y comunicación. Esa formación me ayuda a diseñar interfaces y tomar decisiones de producto con más claridad.",
+    logoAlt: "Logo de IES21",
+  },
+  proximo: {
+    title: "Desarrollador",
+    body: "Desarrollé soluciones para empresas que trabajaban con Próximo, resolviendo necesidades de operación, integración y soporte técnico.",
+    logoAlt: "Logo de Próximo Contact Center",
+  },
+  lateral: {
+    period: "2025 — Actualidad",
+    title: "Ingeniero de software y QA",
+    location: "Inglaterra, Reino Unido",
+    body: "Trabajo en diseño de producto, ingeniería de software y QA durante la migración de Lateral de V4 a V6. Mi trabajo incluye el espacio del deudor, flujos visuales, importaciones, pagos, remesas y herramientas internas.",
+    logoAlt: "Logo de Lateral Technologies",
+  },
+};
 
-const aboutQuoteText = aboutQuoteLines.join(" ");
+const aboutQuoteLines = {
+  en: [
+    "I CREATE SOFTWARE WITH CLARITY, STRUCTURE,",
+    "AND ENOUGH DISCIPLINE TO KEEP COMPLEXITY HONEST.",
+    "CLEAN ARCHITECTURE, RESILIENT BACKEND SYSTEMS,",
+    "AND SOLUTIONS DESIGNED TO AGE WELL.",
+  ],
+  es: [
+    "CREO SOFTWARE CLARO Y BIEN ESTRUCTURADO,",
+    "CON DISCIPLINA PARA MANEJAR LA COMPLEJIDAD.",
+    "ARQUITECTURA LIMPIA, BACKENDS RESILIENTES",
+    "Y SOLUCIONES PENSADAS PARA DURAR.",
+  ],
+};
 const aboutQuoteLineStep = 0.22;
 const aboutQuoteLineSpan = 0.14;
 const aboutQuoteCharacterWindow = 0.18;
@@ -1286,6 +1338,11 @@ function useScrollIdle(delay = 220) {
 }
 
 function HomePage() {
+  const locale = useLocale();
+  const t = useText();
+  const deck = worksDeckCards[locale];
+  const quoteLines = aboutQuoteLines[locale];
+  const expertiseLabels = expertiseTopItems[locale];
   const { ref: heroSequenceRef, progress } = useSectionProgress<HTMLElement>();
   const { ref: aboutSequenceRef, progress: aboutProgress } =
     useSectionProgress<HTMLElement>();
@@ -1326,7 +1383,7 @@ function HomePage() {
   const worksRevealWindow = 0.16;
   let activeWorksIndex = -1;
 
-  for (let index = 0; index < worksDeckCards.length; index += 1) {
+  for (let index = 0; index < deck.length; index += 1) {
     const stepStart = worksRevealLeadIn + index * worksRevealStep;
 
     if (worksProgress >= stepStart - worksRevealWindow * 0.12) {
@@ -1391,7 +1448,7 @@ function HomePage() {
           <Navbar />
 
           <div className="hero-side-ui" aria-hidden="true">
-            <span className="hero-side-ui__label">01 / INTRO</span>
+            <span className="hero-side-ui__label">{t("01 / INTRO", "01 / INICIO")}</span>
             <span className="hero-side-ui__line">
               <span
                 className="hero-side-ui__line-fill"
@@ -1427,7 +1484,7 @@ function HomePage() {
               return (
                 <div className={`hero-background-word ${word.className}`} key={word.id} style={style}>
                   {word.lines.map((line) => (
-                    <span key={line}>{line}</span>
+                    <span key={line}>{locale === "es" ? (word.id === "software" ? "INGENIERÍA" : "SOFTWARE") : line}</span>
                   ))}
                 </div>
               );
@@ -1495,7 +1552,7 @@ function HomePage() {
             <div className="hero-portrait__frame">
               <img
                 src={portraitImage}
-                alt="Portrait of Lautaro Cortez, software engineer and backend engineer"
+                alt={t("Portrait of Lautaro Cortez, software engineer", "Retrato de Lautaro Cortez, ingeniero de software")}
               />
             </div>
           </div>
@@ -1509,16 +1566,17 @@ function HomePage() {
             }}
           >
             <p className="hero-copy__eyebrow" style={{ letterSpacing: `${copyLetterSpacing}em` }}>
-              Lautaro Cortez / Software Engineer
+              {t("Lautaro Cortez / Software Engineer", "Lautaro Cortez / Ingeniero de software")}
             </p>
-            <h1 className="hero-copy__title">Hi, I&apos;m Cortez.</h1>
+            <h1 className="hero-copy__title">{t("Hi, I'm Cortez.", "Hola, soy Cortez.")}</h1>
             <p className="hero-copy__body">
-              I&apos;m Lautaro Cortez, a software engineer and backend engineer focused
-              on scalable software experiences, clean architecture, robust backend
-              development, and solutions built to perform.
+              {t(
+                "I'm Lautaro Cortez, a software engineer and backend engineer focused on scalable software experiences, clean architecture, robust backend development, and solutions built to perform.",
+                "Soy Lautaro Cortez, ingeniero de software especializado en sistemas backend, arquitectura limpia y productos que pueden crecer con sus usuarios."
+              )}
             </p>
             <a className="hero-copy__button" href="#contact">
-              Contact
+              {t("Contact", "Contacto")}
             </a>
           </div>
         </div>
@@ -1540,7 +1598,7 @@ function HomePage() {
         >
           <div className="about-stage__surface">
             <div className="about-side-ui" aria-hidden="true">
-              <span className="about-side-ui__label">02 / ABOUT</span>
+              <span className="about-side-ui__label">{t("02 / ABOUT", "02 / SOBRE MÍ")}</span>
               <span className="about-side-ui__line">
                 <span
                   className="about-side-ui__line-fill"
@@ -1561,7 +1619,7 @@ function HomePage() {
                   transform: `translate3d(0, ${mix(1.8, 0, aboutQuoteIntro)}rem, 0)`,
                 }}
               >
-                ABOUT ME
+                {t("ABOUT ME", "SOBRE MÍ")}
               </p>
 
               <div className="about-quote-layout">
@@ -1585,8 +1643,8 @@ function HomePage() {
                       <span className="about-quote-block__glow-core" />
                     </div>
 
-                    <p className="about-quote" aria-label={aboutQuoteText}>
-                      {aboutQuoteLines.map((line, lineIndex) => {
+                    <p className="about-quote" aria-label={quoteLines.join(" ")}>
+                      {quoteLines.map((line, lineIndex) => {
                         const lineCharacters = [...line];
                         const visibleCharacters = lineCharacters.filter((character) => character !== " ").length;
                         let revealIndex = 0;
@@ -1659,7 +1717,7 @@ function HomePage() {
                           <span className="about-route-link__icon" aria-hidden="true">
                             <span className="about-route-link__arrow" />
                           </span>
-                          <span className="about-route-link__label">More About Me</span>
+                          <span className="about-route-link__label">{t("More About Me", "Más sobre mí")}</span>
                         </Link>
                       </div>
                     </div>
@@ -1673,7 +1731,7 @@ function HomePage() {
                       }}
                     >
                       <div className="about-signature-wrap">
-                        <svg className="about-signature" viewBox="0 0 793 270" aria-label="Cortez signature" role="img">
+                        <svg className="about-signature" viewBox="0 0 793 270" aria-label={t("Cortez signature", "Firma de Cortez")} role="img">
                           <defs>
                             <mask id={signatureMaskId} maskUnits="userSpaceOnUse" x="0" y="0" width="793" height="270">
                               <rect x="0" y="0" width="793" height="270" fill="black" />
@@ -1727,7 +1785,7 @@ function HomePage() {
       </section>
 
       <section className="works-sequence" id="works" ref={worksSequenceRef}>
-        <h2 className="sr-only">Selected software engineering and backend projects</h2>
+        <h2 className="sr-only">{t("Selected software engineering and backend projects", "Proyectos seleccionados de ingeniería de software y backend")}</h2>
         <div
           className="works-stage"
           style={
@@ -1742,9 +1800,9 @@ function HomePage() {
           }
         >
           <div className="works-stage__surface">
-            <Link className="case-back works-library-link" to="/work">All work ↗</Link>
-            <nav className="works-side-ui" aria-label="Works navigation">
-              <span className="works-side-ui__label">03 / WORKS</span>
+            <Link className="case-back works-library-link" to="/work">{t("All work ↗", "Todos los proyectos ↗")}</Link>
+            <nav className="works-side-ui" aria-label={t("Works navigation", "Navegación de proyectos")}>
+              <span className="works-side-ui__label">{t("03 / WORKS", "03 / PROYECTOS")}</span>
               <div className="works-side-ui__controls">
                 <span className="works-side-ui__line" aria-hidden="true">
                   <span
@@ -1756,7 +1814,7 @@ function HomePage() {
                 </span>
 
                 <div className="works-side-ui__steps">
-                  {worksDeckCards.map((card, index) => {
+                  {deck.map((card, index) => {
                     const isActive = index === activeWorksIndex;
 
                     return (
@@ -1768,7 +1826,7 @@ function HomePage() {
                         key={`works-step-${card.id}`}
                         onClick={() => scrollToWorksCard(index)}
                         aria-pressed={isActive}
-                        aria-label={`Scroll to ${card.title}`}
+                        aria-label={t("Scroll to ", "Ir a ") + card.title}
                       >
                         <span className="works-side-ui__step-marker" aria-hidden="true" />
                         <span className="works-side-ui__step-index">{`0${index + 1}`}</span>
@@ -1780,8 +1838,8 @@ function HomePage() {
               </div>
             </nav>
 
-            <div className="works-deck" aria-label="Selected project stack">
-              {worksDeckCards.map((card, index) => {
+            <div className="works-deck" aria-label={t("Selected project stack", "Proyectos destacados")}>
+              {deck.map((card, index) => {
                 const pose =
                   worksStackPoses[index] ??
                   worksStackPoses[worksStackPoses.length - 1];
@@ -1880,7 +1938,7 @@ function HomePage() {
                               target="_blank"
                               rel="noreferrer"
                               tabIndex={isInteractive ? 0 : -1}
-                              aria-label={`Open live ${card.title} site`}
+                              aria-label={t("Open live site: ", "Abrir sitio de ") + card.title}
                             >
                               {card.liveLabel ?? "Live product"}
                             </a>
@@ -1897,7 +1955,7 @@ function HomePage() {
                           </div>
 
                           <div className="works-card__footer">
-                            <ul className="works-card__points" aria-label={`${card.title} highlights`}>
+                            <ul className="works-card__points" aria-label={t("Highlights of ", "Aspectos destacados de ") + card.title}>
                               {card.points.map((point) => (
                                 <li key={point}>{point}</li>
                               ))}
@@ -1906,7 +1964,7 @@ function HomePage() {
                             <Link
                               className="works-card__route"
                               to={card.href}
-                              aria-label={`Open ${card.title} project details`}
+                              aria-label={t("Open project details: ", "Ver caso de ") + card.title}
                               tabIndex={isInteractive ? 0 : -1}
                             >
                               <span>{card.routeLabel}</span>
@@ -1927,9 +1985,9 @@ function HomePage() {
       </section>
 
       <section className="expertise-section" id="expertise" ref={expertiseSectionRef}>
-        <h2 className="sr-only">Backend engineering expertise and technologies</h2>
+        <h2 className="sr-only">{t("Backend engineering expertise and technologies", "Especialidad y tecnologías de ingeniería backend")}</h2>
         <div className="expertise-side-ui" aria-hidden="true">
-          <span className="expertise-side-ui__label">04 / EXPERTISE</span>
+          <span className="expertise-side-ui__label">{t("04 / EXPERTISE", "04 / ESPECIALIDAD")}</span>
           <span className="expertise-side-ui__line">
             <span
               className="expertise-side-ui__line-fill"
@@ -1941,26 +1999,26 @@ function HomePage() {
         </div>
 
         <div className="expertise-shell">
-          <div className="expertise-top-row" aria-label="Expertise areas">
-            {expertiseTopItems.map((item, index) => (
+          <div className="expertise-top-row" aria-label={t("Expertise areas", "Áreas de especialidad")}>
+            {expertiseLabels.map((item, index) => (
               <span className="expertise-top-row__item" key={item}>
                 <span>{item}</span>
-                {index < expertiseTopItems.length - 1 ? (
+                {index < expertiseLabels.length - 1 ? (
                   <span className="expertise-top-row__dot" aria-hidden="true" />
                 ) : null}
               </span>
             ))}
           </div>
 
-          <div className="expertise-pill-grid" aria-label="Core expertise capabilities">
-            {expertisePills.map((pill) => (
+          <div className="expertise-pill-grid" aria-label={t("Core expertise capabilities", "Capacidades principales")}>
+            {expertisePills[locale].map((pill) => (
               <span className="expertise-pill" key={pill.label}>
                 {pill.label}
               </span>
             ))}
           </div>
 
-          <div className="expertise-bottom-stack" aria-label="Expertise technologies">
+          <div className="expertise-bottom-stack" aria-label={t("Expertise technologies", "Tecnologías")}>
             {expertiseBottomStack.map((item, index) => {
               const lineStart = index * 0.08;
               const lineReveal = progressWindow(
@@ -1991,7 +2049,7 @@ function HomePage() {
 
       <section className="contact-section" id="contact" ref={contactSectionRef} aria-labelledby="contact-title">
         <div className="contact-side-ui" aria-hidden="true">
-          <span className="contact-side-ui__label">05 / CONTACT</span>
+          <span className="contact-side-ui__label">{t("05 / CONTACT", "05 / CONTACTO")}</span>
           <span className="contact-side-ui__line">
             <span
               className="contact-side-ui__line-fill"
@@ -2011,8 +2069,8 @@ function HomePage() {
               transform: `translate3d(0, ${mix(2.2, 0, contactIntroReveal)}rem, 0)`,
             }}
           >
-            <h2 className="contact-intro__title" id="contact-title">Let&apos;s talk.</h2>
-            <p className="contact-intro__body">Open to engineering roles and collaborations.</p>
+            <h2 className="contact-intro__title" id="contact-title">{t("Let's talk.", "Hablemos.")}</h2>
+            <p className="contact-intro__body">{t("Open to engineering roles and collaborations.", "Abierto a oportunidades en ingeniería y colaboraciones.")}</p>
             <a className="contact-intro__email" href={`mailto:${contactEmail}`}>{contactEmail}</a>
           </div>
 
@@ -2028,14 +2086,14 @@ function HomePage() {
           </div>
         </div>
 
-        <div className="contact-links" aria-label="External contact links">
+        <div className="contact-links" aria-label={t("Contact links and resumes", "Enlaces de contacto y currículums")}>
           <a
             className="contact-links__item"
             href="https://www.linkedin.com/in/lgiaroli/"
             target="_blank"
             rel="noreferrer"
           >
-            Linkedin
+            LinkedIn
           </a>
           <a
             className="contact-links__item"
@@ -2045,9 +2103,17 @@ function HomePage() {
           >
             GitHub
           </a>
-          <a className="contact-links__item" href={resumePdf} download>
-            Resume
-          </a>
+          {(locale === "es" ? ["es", "en"] : ["en", "es"]).map((resumeLocale) => (
+            <a
+              className="contact-links__item"
+              key={resumeLocale}
+              href={resumeLocale === "es" ? "/cv/Lautaro-Cortez-CV-ES.pdf" : "/cv/Lautaro-Cortez-Resume-EN.pdf"}
+              hrefLang={resumeLocale}
+              download
+            >
+              {t("Resume", "CV")} {resumeLocale.toUpperCase()}
+            </a>
+          ))}
         </div>
       </section>
     </main>
@@ -2115,6 +2181,7 @@ function ProjectShowcase({
 }
 
 function ProjectGallery({ detail, project }: { detail: ProjectDetail; project: WorkCard }) {
+  const t = useText();
   const { ref, progress } = useViewportProgress<HTMLElement>(0.92, 0.3);
   const reveal = progressWindow(progress, 0, 0.62, easeOutCubic);
   const galleryStyle = detail.galleryStyle ?? "grid";
@@ -2127,7 +2194,7 @@ function ProjectGallery({ detail, project }: { detail: ProjectDetail; project: W
     <section
       className={`project-page__gallery project-page__gallery--${galleryStyle}`}
       ref={ref}
-      aria-label={`${project.title} screenshots`}
+      aria-label={t("Screenshots of ", "Capturas de ") + project.title}
       style={{
         opacity: mix(0.72, 1, reveal),
         filter: `blur(${mix(6, 0, reveal)}px)`,
@@ -2192,6 +2259,7 @@ function ProjectProfile({
   detail: ProjectDetail;
   project: WorkCard;
 }) {
+  const t = useText();
   const { ref, progress } = useViewportProgress<HTMLElement>(0.9, 0.36);
   const reveal = progressWindow(progress, 0, 0.64, easeOutCubic);
   const detailReveal = progressWindow(progress, 0.18, 0.82, easeOutCubic);
@@ -2200,7 +2268,7 @@ function ProjectProfile({
     <section
       className="project-page__profile"
       ref={ref}
-      aria-label={`${project.title} operational overview`}
+      aria-label={t("Operational overview of ", "Resumen operativo de ") + project.title}
       style={
         {
           "--project-line-progress": reveal,
@@ -2216,10 +2284,12 @@ function ProjectProfile({
         }}
       >
         <p className="project-page__section-kicker">{detail.eyebrow}</p>
-        <h2 className="project-page__section-title">Operational Overview</h2>
+        <h2 className="project-page__section-title">{t("Operational Overview", "Resumen operativo")}</h2>
         <p className="project-page__body">
-          A concise view of the operating surface, the stack behind it, and the
-          capabilities that support detection, monitoring, triage, and escalation.
+          {t(
+            "The workflows, technology, and capabilities behind the project.",
+            "Los flujos de trabajo, las tecnologías y las funciones que sostienen el proyecto."
+          )}
         </p>
       </div>
 
@@ -2232,7 +2302,7 @@ function ProjectProfile({
       >
         {detail.groups ? (
           <section className="project-page__spec-section">
-            <p className="project-page__section-kicker">Technology Stack</p>
+            <p className="project-page__section-kicker">{t("Technology Stack", "Tecnologías")}</p>
             <div className="project-page__info-groups">
               {detail.groups.map((group) => (
                 <div className="project-page__info-group" key={group.label}>
@@ -2251,7 +2321,7 @@ function ProjectProfile({
         ) : null}
 
         <section className="project-page__spec-section">
-          <p className="project-page__section-kicker">Core Surfaces</p>
+          <p className="project-page__section-kicker">{t("Core Surfaces", "Áreas principales")}</p>
           <ul className="project-page__list">
             {project.points.map((point) => (
               <li key={point}>{point}</li>
@@ -2260,7 +2330,7 @@ function ProjectProfile({
         </section>
 
         <section className="project-page__spec-section">
-          <p className="project-page__section-kicker">Implemented Capabilities</p>
+          <p className="project-page__section-kicker">{t("Implemented Capabilities", "Funciones implementadas")}</p>
           <ul className="project-page__list">
             {detail.outcomes.map((outcome) => (
               <li key={outcome}>{outcome}</li>
@@ -2353,6 +2423,7 @@ function ProjectDetailSection({
 }
 
 function ProjectDetails({ detail, project }: { detail: ProjectDetail; project: WorkCard }) {
+  const t = useText();
   const { ref, progress } = useViewportProgress<HTMLElement>(0.94, 0.42);
 
   if (!detail.deepDives) {
@@ -2363,7 +2434,7 @@ function ProjectDetails({ detail, project }: { detail: ProjectDetail; project: W
     <section
       className="project-page__details"
       ref={ref}
-      aria-label={`${project.title} project details`}
+      aria-label={t("Project details for ", "Detalles de ") + project.title}
       style={
         {
           "--project-line-progress": progressWindow(progress, 0, 0.72, easeOutCubic),
@@ -2378,13 +2449,18 @@ function ProjectDetails({ detail, project }: { detail: ProjectDetail; project: W
 }
 
 function ProjectPage() {
+  const locale = useLocale();
+  const t = useText();
   const { projectId } = useParams();
-  const currentCase = caseStudies.find((study) => study.id === projectId);
+  const currentCase = caseStudies[locale].find((study) => study.id === projectId);
 
   if (currentCase) return <PortfolioCasePage key={currentCase.id} study={currentCase} />;
 
-  const project = worksCards.find((item) => item.id === projectId);
-  const detail = projectId ? projectDetails[projectId] : undefined;
+  const project = localizedWorksCards[locale].find((item) => item.id === projectId);
+  const baseDetail = projectId ? projectDetails[projectId] : undefined;
+  const detail = locale === "es" && projectId && baseDetail
+    ? localizeLegacyProjectDetail(projectId, baseDetail)
+    : baseDetail;
 
   if (!project || !detail) {
     return (
@@ -2408,18 +2484,18 @@ function ProjectPage() {
                   d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
                 />
               </svg>
-              <span>Back To Works</span>
+              <span>{t("Back To Works", "Volver a proyectos")}</span>
             </Link>
 
             <div className="project-page__hero-center">
               <p className="project-page__tag">
-                <span>(PROJECT</span>
+                <span>{t("(PROJECT", "(PROYECTO")}</span>
                 <span className="project-page__tag-dot">.</span>
                 <span>)</span>
               </p>
-              <h1 className="project-page__title">This project page is not available.</h1>
+              <h1 className="project-page__title">{t("This project page is not available.", "Este proyecto no está disponible.")}</h1>
               <p className="project-page__subtitle">
-                The requested project could not be found in the current site build.
+                {t("The requested project could not be found.", "No encontramos el proyecto solicitado.")}
               </p>
             </div>
           </div>
@@ -2437,7 +2513,7 @@ function ProjectPage() {
         <Navbar />
 
         <div className="project-page__side-ui" aria-hidden="true">
-          <span className="project-page__side-label">03 / PROJECT</span>
+          <span className="project-page__side-label">{t("03 / PROJECT", "03 / PROYECTO")}</span>
           <span className="project-page__side-line" />
         </div>
 
@@ -2457,12 +2533,12 @@ function ProjectPage() {
                 d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
               />
             </svg>
-            <span>Back To Works</span>
+            <span>{t("Back To Works", "Volver a proyectos")}</span>
           </Link>
 
           <div className="project-page__hero-center">
             <p className="project-page__tag">
-              <span>(PROJECT</span>
+              <span>{t("(PROJECT", "(PROYECTO")}</span>
               <span className="project-page__tag-dot">.</span>
               <span>)</span>
             </p>
@@ -2483,9 +2559,9 @@ function ProjectPage() {
                   href={project.liveUrl}
                   target="_blank"
                   rel="noreferrer"
-                  aria-label={`Open live ${project.title} site`}
+                  aria-label={t("Open live site: ", "Abrir sitio de ") + project.title}
                 >
-                  <span>{project.liveLabel ?? "Live Product"}</span>
+                  <span>{project.liveLabel ?? t("Live Product", "Ver producto")}</span>
                   <span className="project-page__external-icon" aria-hidden="true">
                     ↗
                   </span>
@@ -2493,7 +2569,7 @@ function ProjectPage() {
               </div>
             ) : null}
 
-            <dl className="project-page__metrics" aria-label={`${project.title} metrics`}>
+            <dl className="project-page__metrics" aria-label={t("Key facts about ", "Datos de ") + project.title}>
               {detail.metrics.map((metric) => (
                 <div className="project-page__metric" key={metric.label}>
                   <dt className="project-page__metric-label">{metric.label}</dt>
@@ -2510,7 +2586,7 @@ function ProjectPage() {
           <ProjectShowcase detail={detail} project={project} />
           {showGalleryAfterStatement ? null : gallery}
 
-          <section className="project-page__statement" aria-label={`${project.title} overview`}>
+          <section className="project-page__statement" aria-label={t("Overview of ", "Descripción de ") + project.title}>
             {detail.body.map((paragraph, index) => (
               <ProjectStatementParagraph index={index} key={paragraph} paragraph={paragraph} />
             ))}
@@ -2527,12 +2603,17 @@ function ProjectPage() {
 }
 
 function AboutPage() {
+  const locale = useLocale();
+  const t = useText();
+  const journey = locale === "es"
+    ? aboutJourneyItems.map((item) => ({ ...item, ...aboutJourneySpanish[item.id] }))
+    : aboutJourneyItems;
   const { ref: aboutJourneyRef, progress: aboutJourneyProgress } =
     useSectionProgress<HTMLElement>();
   const aboutJourneyDrive = progressWindow(aboutJourneyProgress, 0.1, 0.985, easeInOutCubic);
   const aboutJourneyCursor = steppedCursor(
     aboutJourneyDrive,
-    aboutJourneyItems.length - 1,
+    journey.length - 1,
     0.44
   );
   const aboutJourneyLine = progressWindow(aboutJourneyDrive, 0.02, 0.96, easeOutCubic);
@@ -2543,7 +2624,7 @@ function AboutPage() {
         <Navbar />
 
         <div className="about-page__side-ui" aria-hidden="true">
-          <span className="about-page__side-label">02 / ABOUT</span>
+          <span className="about-page__side-label">{t("02 / ABOUT", "02 / SOBRE MÍ")}</span>
           <span className="about-page__side-line" />
         </div>
 
@@ -2563,35 +2644,36 @@ function AboutPage() {
                 d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
               />
             </svg>
-            <span>Back</span>
+            <span>{t("Back", "Volver")}</span>
           </Link>
 
           <div className="about-page__hero-center">
             <p className="about-page__hero-tag">
-              <span>(ABOUT ME</span>
+              <span>{t("(ABOUT ME", "(SOBRE MÍ")}</span>
               <span className="about-page__hero-tag-dot">.</span>
               <span>)</span>
             </p>
 
             <h1 className="about-page__hero-title">
-              <span className="about-page__hero-title-line">A SOFTWARE ENGINEER</span>
+              <span className="about-page__hero-title-line">{t("A SOFTWARE ENGINEER", "INGENIERÍA DE SOFTWARE")}</span>
               <span className="about-page__hero-title-line about-page__hero-title-line--accent">
-                FOR SYSTEMS THAT LAST.
+                {t("FOR SYSTEMS THAT LAST.", "PARA SISTEMAS QUE DURAN.")}
               </span>
             </h1>
 
             <p className="about-page__hero-subtitle">
-              Lautaro Cortez is a software engineer focused on backend systems,
-              software quality, API design, and product architecture that holds up
-              over time.
+              {t(
+                "Lautaro Cortez is a software engineer focused on backend systems, software quality, API design, and product architecture that holds up over time.",
+                "Lautaro Cortez es ingeniero de software. Se especializa en sistemas backend, calidad de software, diseño de API y arquitecturas de producto que se sostienen en el tiempo."
+              )}
             </p>
 
             <figure className="about-page__hero-portrait">
               <div className="about-page__hero-photo">
-                <img src={aboutChildhoodImage} alt="Lautaro Cortez as a child" />
+                <img src={aboutChildhoodImage} alt={t("Lautaro Cortez as a child", "Lautaro Cortez de niño")} />
               </div>
               <figcaption className="about-page__hero-caption">
-                Lautaro Cortez, future software engineer.
+                {t("Lautaro Cortez, future software engineer.", "Lautaro Cortez, futuro ingeniero de software.")}
               </figcaption>
             </figure>
           </div>
@@ -2601,16 +2683,16 @@ function AboutPage() {
       <section className="about-page__content">
         <div className="about-page__statement">
           <p>
-            I&apos;m Lautaro Cortez, a software engineer whose path into software was
-            shaped by two disciplines that still define the way I build: Systems
-            Engineering gave me structure, while Graphic Design trained my eye for
-            hierarchy, clarity, and communication.
+            {t(
+              "I'm Lautaro Cortez, a software engineer whose path into software was shaped by two disciplines that still define the way I build: Systems Engineering gave me structure, while Graphic Design trained my eye for hierarchy, clarity, and communication.",
+              "Soy Lautaro Cortez, ingeniero de software. Dos disciplinas siguen marcando mi forma de trabajar. Ingeniería en Sistemas me dio estructura y Diseño Gráfico me enseñó a prestar atención a la jerarquía, la claridad y la comunicación."
+            )}
           </p>
           <p>
-            That mix carried into real product work, where I moved from implementation for
-            external clients to QA and software engineering, focusing on backend quality,
-            security, API thinking, and improvements that make platforms more robust,
-            efficient, and scalable.
+            {t(
+              "That mix carried into real product work, where I moved from implementation for external clients to QA and software engineering, focusing on backend quality, security, API thinking, and improvements that make platforms more robust, efficient, and scalable.",
+              "Llevé esa combinación al trabajo de producto. Pasé de implementar soluciones para clientes a trabajar en QA e ingeniería de software, con foco en calidad del backend, seguridad, diseño de API y plataformas más robustas, eficientes y escalables."
+            )}
           </p>
         </div>
 
@@ -2618,21 +2700,23 @@ function AboutPage() {
           <div className="about-page__journey-stage">
             <div className="about-page__journey-shell">
               <div className="about-page__journey-copy">
-                <p className="about-page__journey-eyebrow">Education / Experience</p>
-                <h2 className="about-page__journey-title">Experience</h2>
+                <p className="about-page__journey-eyebrow">{t("Education / Experience", "Formación / Experiencia")}</p>
+                <h2 className="about-page__journey-title">{t("Experience", "Experiencia")}</h2>
                 <p className="about-page__journey-lead">
-                  A scroll-driven timeline of the academic foundation and product work behind my
-                  approach to systems, quality, and engineering.
+                  {t(
+                    "A scroll-driven timeline of the academic foundation and product work behind my approach to systems, quality, and engineering.",
+                    "La formación y la experiencia en producto que dieron forma a mi manera de diseñar sistemas, desarrollar software y cuidar su calidad."
+                  )}
                 </p>
                 <div className="about-page__journey-actions">
                   <Link className="about-page__back" to="/">
-                    Back To Intro
+                    {t("Back To Intro", "Volver al inicio")}
                   </Link>
                 </div>
               </div>
 
               <div className="about-page__journey-layout">
-                <div className="about-page__journey-rail" aria-label="Timeline navigation">
+                <div className="about-page__journey-rail" aria-label={t("Timeline navigation", "Navegación de la trayectoria")}>
                   <span className="about-page__journey-rail-line">
                     <span
                       className="about-page__journey-rail-line-fill"
@@ -2643,7 +2727,7 @@ function AboutPage() {
                   </span>
 
                   <div className="about-page__journey-rail-items">
-                    {aboutJourneyItems.map((item, index) => {
+                    {journey.map((item, index) => {
                       const distance = index - aboutJourneyCursor;
                       const focus = easeOutCubic(clamp01(1 - Math.abs(distance) / 0.8));
 
@@ -2659,7 +2743,7 @@ function AboutPage() {
                           <span className="about-page__journey-rail-dot" />
                           <div className="about-page__journey-rail-copy">
                             <span className="about-page__journey-rail-period">{item.period}</span>
-                            <span className="about-page__journey-rail-kind">{item.kind}</span>
+                            <span className="about-page__journey-rail-kind">{t(item.kind, item.kind === "Education" ? "Formación" : "Experiencia")}</span>
                           </div>
                         </div>
                       );
@@ -2667,8 +2751,8 @@ function AboutPage() {
                   </div>
                 </div>
 
-                <div className="about-page__journey-cards" aria-label="Education and work history">
-                  {aboutJourneyItems.map((item, index) => {
+                <div className="about-page__journey-cards" aria-label={t("Education and work history", "Formación y trayectoria profesional")}>
+                  {journey.map((item, index) => {
                     const distance = index - aboutJourneyCursor;
                     const absDistance = Math.abs(distance);
                     const focus = easeOutCubic(clamp01(1 - absDistance / 0.9));
@@ -2694,7 +2778,7 @@ function AboutPage() {
                         }
                       >
                         <div className="about-page__journey-card-topline">
-                          <span className="about-page__journey-card-kind">{item.kind}</span>
+                          <span className="about-page__journey-card-kind">{t(item.kind, item.kind === "Education" ? "Formación" : "Experiencia")}</span>
                           <span className="about-page__journey-card-period">{item.period}</span>
                         </div>
 
@@ -2761,15 +2845,21 @@ function ScrollManager() {
 }
 
 function App() {
+  const entries = workEntries[useLocale()];
+
   return (
     <>
       <ScrollManager />
-      <SeoManager workEntries={workEntries} />
+      <SeoManager workEntries={entries} />
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/work" element={<WorkIndex entries={workEntries} />} />
-        <Route path="/projects/:projectId" element={<ProjectPage />} />
+        {["/", "/es"].map((base) => (
+          <Route path={base} key={base}>
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="work" element={<WorkIndex entries={entries} />} />
+            <Route path="projects/:projectId" element={<ProjectPage />} />
+          </Route>
+        ))}
         <Route path="*" element={<HomePage />} />
       </Routes>
     </>

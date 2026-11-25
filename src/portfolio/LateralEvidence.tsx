@@ -1,4 +1,5 @@
 import "./lateralEvidence.css";
+import { useLocale } from "../i18n/locale";
 
 type EvidenceStep = {
   label: string;
@@ -53,13 +54,19 @@ function EvidenceFlow({
 }
 
 function EtlImportFlow() {
+  const locale = useLocale();
   return (
     <EvidenceFlow
       variant="etl"
-      eyebrow="ETL · import lifecycle"
-      title="A review checkpoint before V6 changes"
-      caption="Illustrative flow from a scoped synthetic pilot. No tenant or customer data shown."
-      steps={[
+      eyebrow={locale === "es" ? "ETL · ciclo de importación" : "ETL · import lifecycle"}
+      title={locale === "es" ? "Revisar antes de hacer cambios en V6" : "A review checkpoint before V6 changes"}
+      caption={locale === "es" ? "Flujo ilustrativo de una prueba piloto sintética y acotada. No se muestran datos de clientes." : "Illustrative flow from a scoped synthetic pilot. No tenant or customer data shown."}
+      steps={locale === "es" ? [
+        { label: "Origen", title: "Archivo CSV", detail: "Datos del caso" },
+        { label: "Preparación", title: "Asignar y validar", detail: "Normalizar campos" },
+        { label: "Revisión", title: "Vista previa de cambios", detail: "Altas y actualizaciones" },
+        { label: "Guardar", title: "Registros de V6", detail: "Casos y actividad financiera" },
+      ] : [
         { label: "Source", title: "CSV file", detail: "Case data" },
         { label: "Prepare", title: "Map & validate", detail: "Normalize fields" },
         { label: "Review", title: "Preview changes", detail: "Adds and updates" },
@@ -70,13 +77,26 @@ function EtlImportFlow() {
 }
 
 function FinanceIntegrationFlow() {
+  const locale = useLocale();
   return (
     <EvidenceFlow
       variant="finance"
-      eyebrow="Finance · allocation path"
-      title="Trace payment activity into remittance review"
-      caption="Conceptual flow for a scoped mixed-payment QA run. No customer or payment data shown."
-      steps={[
+      eyebrow={locale === "es" ? "Finanzas · asignación" : "Finance · allocation path"}
+      title={locale === "es" ? "Seguir los pagos hasta revisar la remesa" : "Trace payment activity into remittance review"}
+      caption={locale === "es" ? "Flujo conceptual de una prueba de QA acotada con pagos mixtos. No se muestran datos de clientes ni pagos." : "Conceptual flow for a scoped mixed-payment QA run. No customer or payment data shown."}
+      steps={locale === "es" ? [
+        { label: "Entrada", title: "Actividad de pagos", detail: "Registros de pagos" },
+        {
+          label: "Separar",
+          title: "Aplicar reglas de asignación",
+          items: ["Cobranzas de agencia", "Cobranzas directas"],
+        },
+        {
+          label: "Revisar",
+          title: "Resumen de remesa",
+          items: ["Importe neto", "Cargos", "Ajustes positivos o negativos"],
+        },
+      ] : [
         { label: "Input", title: "Payment activity", detail: "Recorded payment rows" },
         {
           label: "Separate",

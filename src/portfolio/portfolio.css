@@ -559,6 +559,10 @@
     font-size: clamp(2.6rem, 12vw, 3.6rem);
   }
 
+  .case-heading h1:lang(es) {
+    font-size: clamp(2rem, 9.5vw, 3.1rem);
+  }
+
   .case-index {
     gap: 0 1rem;
   }

@@ -1,8 +1,11 @@
+import { localizedPath, type Locale } from "./i18n/locale";
+
 export const PERSON_NAME = "Lautaro Cortez";
 export const SITE_URL = "https://lautarocortez.com";
 export const DEFAULT_OG_IMAGE_PATH = "/og-portrait.jfif";
 export const DEFAULT_OG_IMAGE_ALT =
   "Portrait of Lautaro Cortez, software engineer and backend engineer";
+export const SPANISH_OG_IMAGE_ALT = "Retrato de Lautaro Cortez, ingeniero de software";
 
 export const SEO_KEYWORDS = [
   "Lautaro Cortez",
@@ -37,27 +40,41 @@ export const ABOUT_SEO = {
   type: "profile",
 } as const;
 
+export const SPANISH_HOME_SEO = {
+  ...HOME_SEO,
+  title: "Lautaro Cortez | Ingeniero de software y backend",
+  description: "Portfolio de Lautaro Cortez, ingeniero de software especializado en sistemas backend, diseño de API y arquitectura de producto.",
+};
+
+export const SPANISH_ABOUT_SEO = {
+  ...ABOUT_SEO,
+  title: "Sobre Lautaro Cortez | Trayectoria profesional",
+  description: "Conocé la formación y experiencia de Lautaro Cortez en ingeniería de software, calidad, desarrollo backend y diseño de API.",
+};
+
 function toAbsoluteUrl(origin: string, path: string) {
   return new URL(path, origin).toString();
 }
 
-export function createHomePageSchema(origin: string) {
+export function createHomePageSchema(origin: string, locale: Locale) {
   const siteUrl = toAbsoluteUrl(origin, "/");
+  const pageUrl = toAbsoluteUrl(origin, localizedPath("/", locale));
   const imageUrl = toAbsoluteUrl(origin, DEFAULT_OG_IMAGE_PATH);
+  const seo = locale === "es" ? SPANISH_HOME_SEO : HOME_SEO;
 
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "WebPage",
-        "@id": `${siteUrl}#webpage`,
-        url: siteUrl,
-        name: HOME_SEO.title,
-        description: HOME_SEO.description,
+        "@id": `${pageUrl}#webpage`,
+        url: pageUrl,
+        name: seo.title,
+        description: seo.description,
         isPartOf: { "@id": `${siteUrl}#website` },
         about: { "@id": `${siteUrl}#person` },
         primaryImageOfPage: { "@id": `${siteUrl}#primaryimage` },
-        inLanguage: "en",
+        inLanguage: locale,
       },
       {
         "@type": "ImageObject",
@@ -65,15 +82,17 @@ export function createHomePageSchema(origin: string) {
         url: imageUrl,
         width: 1024,
         height: 1024,
-        caption: DEFAULT_OG_IMAGE_ALT,
+        caption: locale === "es" ? SPANISH_OG_IMAGE_ALT : DEFAULT_OG_IMAGE_ALT,
       },
     ],
   };
 }
 
-export function createAboutPageSchema(origin: string) {
+export function createAboutPageSchema(origin: string, locale: Locale) {
   const siteUrl = toAbsoluteUrl(origin, "/");
-  const aboutUrl = toAbsoluteUrl(origin, ABOUT_SEO.path);
+  const homeUrl = toAbsoluteUrl(origin, localizedPath("/", locale));
+  const aboutUrl = toAbsoluteUrl(origin, localizedPath(ABOUT_SEO.path, locale));
+  const seo = locale === "es" ? SPANISH_ABOUT_SEO : ABOUT_SEO;
 
   return {
     "@context": "https://schema.org",
@@ -82,11 +101,11 @@ export function createAboutPageSchema(origin: string) {
         "@type": "ProfilePage",
         "@id": `${aboutUrl}#webpage`,
         url: aboutUrl,
-        name: ABOUT_SEO.title,
-        description: ABOUT_SEO.description,
+        name: seo.title,
+        description: seo.description,
         isPartOf: { "@id": `${siteUrl}#website` },
         mainEntity: { "@id": `${siteUrl}#person` },
-        inLanguage: "en",
+        inLanguage: locale,
       },
       {
         "@type": "BreadcrumbList",
@@ -95,13 +114,13 @@ export function createAboutPageSchema(origin: string) {
           {
             "@type": "ListItem",
             position: 1,
-            name: "Home",
-            item: siteUrl,
+            name: locale === "es" ? "Inicio" : "Home",
+            item: homeUrl,
           },
           {
             "@type": "ListItem",
             position: 2,
-            name: "About",
+            name: locale === "es" ? "Sobre mí" : "About",
             item: aboutUrl,
           },
         ],
