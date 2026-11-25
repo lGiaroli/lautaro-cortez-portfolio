@@ -7,8 +7,10 @@ import alqagMapPopoutImage from "./assets/alqag-map-popout.png";
 import alqagSmartSearchImage from "./assets/alqag-smart-search.png";
 import aboutChildhoodImage from "./assets/about-childhood.jfif";
 import focoVivoMapViewImage from "./assets/foco-vivo-map-view.png";
+import focoVivoDashboardImage from "./assets/cases/foco-vivo-dashboard.jpg";
 import ies21Logo from "./assets/ies21-logo.png";
 import lateralLogo from "./assets/lateral-logo.png";
+import lateralV6DebtorImage from "./assets/cases/lateral-v6-debtor.jpg";
 import lateralTimeAdminImage from "./assets/lateral-time-admin-light.png";
 import lateralTimeDashboardImage from "./assets/lateral-time-dashboard-light.png";
 import lateralTimeInsightsImage from "./assets/lateral-time-insights-light.png";
@@ -20,6 +22,12 @@ import signatureImage from "./assets/signature-clean.png";
 import utnLogoClean from "./assets/utn-logo-clean.png";
 import { Navbar } from "./components/Navbar";
 import { SeoManager } from "./components/Seo";
+import { PortfolioCasePage } from "./portfolio/PortfolioCasePage";
+import { WorkIndex, type WorkEntry } from "./portfolio/WorkIndex";
+import type { CaseStudy } from "./portfolio/caseTypes";
+import { otherCases } from "./portfolio/otherCases";
+import { lateralCases } from "./portfolio/lateralCases";
+import { lateralV6 } from "./portfolio/lateralV6";
 
 type BackgroundWord = {
   id: string;
@@ -442,11 +450,23 @@ const fragments: Fragment[] = [
 
 const worksCards: WorkCard[] = [
   {
+    id: lateralV6.id,
+    kicker: "V4 to V6 Migration",
+    title: lateralV6.title,
+    summary: lateralV6.summary,
+    points: ["Debtor page", "Propensity to Pay", "Visual workflows"],
+    media: `linear-gradient(90deg, rgba(5, 8, 7, 0.85), rgba(5, 8, 7, 0.14) 62%), url(${lateralV6DebtorImage})`,
+    glow: "radial-gradient(ellipse at 65% 44%, rgba(206, 193, 148, 0.14), transparent 64%)",
+    href: "/projects/lateral-v6",
+    routeLabel: "View Case",
+    mediaPosition: "center, center 28%",
+  },
+  {
     id: "lateral-time",
     kicker: "Internal Time Tracking",
     title: "Lateral Time",
     summary:
-      "Internal time, review, incident, and team operations platform tuned to stay inside a strict free-tier infrastructure budget.",
+      "Internal time, approvals, incident tracking, and team operations designed around a free-tier infrastructure budget.",
     points: ["Time capture", "Review ops", "CU-hour budget"],
     media:
       `linear-gradient(90deg, rgba(6, 9, 8, 0.35) 0%, rgba(6, 9, 8, 0.03) 48%, rgba(6, 9, 8, 0.2) 100%), url(${lateralTimeDashboardImage})`,
@@ -491,7 +511,7 @@ const worksCards: WorkCard[] = [
   },
 ];
 
-const worksDeckCards = ["alqag", "foco-vivo", "lateral-time"].map((id) => {
+const worksDeckCards = ["alqag", "foco-vivo", "lateral-v6"].map((id) => {
   const card = worksCards.find((item) => item.id === id);
 
   if (!card) {
@@ -500,6 +520,19 @@ const worksDeckCards = ["alqag", "foco-vivo", "lateral-time"].map((id) => {
 
   return card;
 });
+
+const caseStudies: CaseStudy[] = [lateralV6, ...lateralCases, ...otherCases];
+const workEntries: WorkEntry[] = [
+  ...caseStudies.filter((study) => study.group === "lateral"),
+  ...worksCards.filter((card) => card.id !== lateralV6.id).map((card): WorkEntry => ({
+    id: card.id,
+    group: card.id === "lateral-time" ? "lateral" : "other-works",
+    title: card.title,
+    subtitle: card.kicker,
+    summary: card.summary,
+  })),
+  ...otherCases,
+];
 
 const worksStackPoses = [
   {
@@ -597,9 +630,9 @@ const projectDetails: Record<string, ProjectDetail> = {
       },
       {
         kicker: "CU-Hour Optimization",
-        title: "Built to stay inside a strict free-tier budget",
+        title: "Designed around a strict free-tier target",
         body: [
-          "The most important backend constraint was infrastructure consumption. The initial approach was too expensive for a small internal tool, so I redesigned the persistence and reporting behavior around incremental work.",
+          "The budget for the internal tool was under 100 CU-hours per month. I used it as a design target for the persistence and reporting changes.",
           "Instead of recomputing full review state or rewriting the complete workspace after every interaction, the app persists only modified entities, uses debounced writes, and keeps cached review snapshots that can be updated cheaply.",
         ],
         points: [
@@ -796,6 +829,15 @@ const projectDetails: Record<string, ProjectDetail> = {
     image: focoVivoMapViewImage,
     imageAlt: "Foco Vivo immersive map interface with wildfire markers and event triage panels",
     imagePosition: "center top",
+    galleryTitle: "Operational dashboard",
+    screenshots: [
+      {
+        src: focoVivoDashboardImage,
+        alt: "Foco Vivo dashboard with event metrics, wildfire filters, and a selected event summary",
+        caption: "The dashboard brings event counts, weather filters, and priority into one view. Shown with demo data.",
+        variant: "wide",
+      },
+    ],
   },
   alqag: {
     eyebrow: "Full-Stack Platform / Permanent Rentals",
@@ -1014,7 +1056,7 @@ const aboutJourneyItems: AboutJourneyItem[] = [
     title: "QA & Software Engineer",
     organization: "Lateral Technologies",
     location: "England, United Kingdom",
-    body: "I work across quality assurance and software engineering: validating features, identifying vulnerabilities, investigating issues, and proposing improvements that make the product more secure, robust, efficient, innovative, and scalable.",
+    body: "I work across product design, software engineering, and QA on Lateral’s migration from V4 to V6. My work includes the debtor workspace, visual workflows, data imports, payments and remittance, and internal tools for the operations team.",
     logo: lateralLogo,
     logoAlt: "Lateral Technologies logo",
   },
@@ -1713,6 +1755,7 @@ function HomePage() {
           }
         >
           <div className="works-stage__surface">
+            <Link className="case-back works-library-link" to="/work">All work ↗</Link>
             <nav className="works-side-ui" aria-label="Works navigation">
               <span className="works-side-ui__label">03 / WORKS</span>
               <div className="works-side-ui__controls">
@@ -2413,6 +2456,10 @@ function ProjectDetails({ detail, project }: { detail: ProjectDetail; project: W
 
 function ProjectPage() {
   const { projectId } = useParams();
+  const currentCase = caseStudies.find((study) => study.id === projectId);
+
+  if (currentCase) return <PortfolioCasePage key={currentCase.id} study={currentCase} />;
+
   const project = worksCards.find((item) => item.id === projectId);
   const detail = projectId ? projectDetails[projectId] : undefined;
 
@@ -2423,7 +2470,7 @@ function ProjectPage() {
           <Navbar />
 
           <div className="project-page__hero-grid">
-            <Link className="project-page__back" to="/#works">
+            <Link className="project-page__back" to="/work">
               <svg
                 className="project-page__back-icon"
                 viewBox="0 0 24 24"
@@ -2472,7 +2519,7 @@ function ProjectPage() {
         </div>
 
         <div className="project-page__hero-grid">
-          <Link className="project-page__back" to="/#works">
+          <Link className="project-page__back" to="/work">
             <svg
               className="project-page__back-icon"
               viewBox="0 0 24 24"
@@ -2784,7 +2831,7 @@ function ScrollManager() {
       }
     }
 
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [location.hash, location.pathname]);
 
   return null;
@@ -2794,10 +2841,11 @@ function App() {
   return (
     <>
       <ScrollManager />
-      <SeoManager />
+      <SeoManager workEntries={workEntries} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/work" element={<WorkIndex entries={workEntries} />} />
         <Route path="/projects/:projectId" element={<ProjectPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>

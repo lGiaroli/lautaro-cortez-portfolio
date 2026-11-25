@@ -1,0 +1,187 @@
+.lateral-evidence {
+  --lateral-evidence-accent: rgba(206, 193, 148, 0.88);
+  margin: 1.35rem 0 0;
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: 0.38rem;
+  background: var(--panel);
+  color: var(--text);
+  font-family: var(--grotesk);
+}
+
+.lateral-evidence__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.45rem 1rem;
+  margin-bottom: 1.05rem;
+}
+
+.lateral-evidence__eyebrow,
+.lateral-evidence__heading h3 {
+  margin: 0;
+}
+
+.lateral-evidence__eyebrow {
+  color: var(--lateral-evidence-accent);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.lateral-evidence__heading h3 {
+  width: 100%;
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.32;
+  text-wrap: balance;
+}
+
+.lateral-evidence__steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lateral-evidence--finance .lateral-evidence__steps {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.lateral-evidence__step {
+  position: relative;
+  min-width: 0;
+}
+
+.lateral-evidence__step:not(:last-child)::after {
+  position: absolute;
+  top: 50%;
+  right: -0.7rem;
+  z-index: 1;
+  color: var(--lateral-evidence-accent);
+  content: "→";
+  font-size: 0.9rem;
+  line-height: 1;
+  transform: translate(50%, -50%);
+}
+
+.lateral-evidence__node {
+  display: flex;
+  height: 100%;
+  min-height: 7.2rem;
+  gap: 0.62rem;
+  padding: 0.82rem 0.72rem;
+  border: 1px solid var(--line);
+  border-radius: 0.28rem;
+  background: rgba(242, 245, 239, 0.018);
+}
+
+.lateral-evidence--etl .lateral-evidence__step:nth-child(3) .lateral-evidence__node,
+.lateral-evidence--finance .lateral-evidence__step:last-child .lateral-evidence__node {
+  border-color: rgba(206, 193, 148, 0.34);
+  background: rgba(206, 193, 148, 0.045);
+}
+
+.lateral-evidence__index {
+  flex: 0 0 auto;
+  padding-top: 0.05rem;
+  color: var(--lateral-evidence-accent);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.lateral-evidence__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.lateral-evidence__label {
+  color: var(--muted);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.lateral-evidence__copy strong {
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.lateral-evidence__detail {
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.lateral-evidence__items {
+  display: grid;
+  gap: 0.34rem;
+  margin: 0.24rem 0 0;
+  padding: 0.48rem 0 0 0.9rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.42;
+}
+
+.lateral-evidence figcaption {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+  .lateral-evidence--etl .lateral-evidence__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lateral-evidence--etl .lateral-evidence__step::after {
+    display: none;
+  }
+
+  .lateral-evidence--finance .lateral-evidence__steps {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .lateral-evidence--finance .lateral-evidence__step:not(:last-child)::after {
+    top: auto;
+    right: auto;
+    bottom: -0.9rem;
+    left: 50%;
+    content: "↓";
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 480px) {
+  .lateral-evidence--etl .lateral-evidence__steps {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .lateral-evidence--etl .lateral-evidence__step:not(:last-child)::after {
+    top: auto;
+    right: auto;
+    bottom: -0.9rem;
+    left: 50%;
+    display: block;
+    content: "↓";
+    transform: translateX(-50%);
+  }
+}

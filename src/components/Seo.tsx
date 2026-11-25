@@ -55,17 +55,42 @@ function toAbsoluteUrl(origin: string, path: string) {
   return new URL(path, origin).toString();
 }
 
-export function SeoManager() {
+type WorkSeoEntry = { id: string; title: string; summary: string };
+
+const WORK_SEO = {
+  title: "Selected work | Lautaro Cortez",
+  description: "Software engineering and product design case studies by Lautaro Cortez, including work at Lateral and other projects.",
+  path: "/work",
+  type: "website",
+};
+
+export function SeoManager({ workEntries }: { workEntries: WorkSeoEntry[] }) {
   const location = useLocation();
 
   useEffect(() => {
-    const isAboutPage = location.pathname === ABOUT_SEO.path;
-    const activeSeo = isAboutPage ? ABOUT_SEO : HOME_SEO;
+    const pathname = location.pathname.replace(/\/$/, "") || "/";
+    const isAboutPage = pathname === ABOUT_SEO.path;
+    const work = workEntries.find(({ id }) => pathname === `/projects/${id}`);
+    const workSeo = work && {
+      title: `${work.title} | Lautaro Cortez`,
+      description: work.summary,
+      path: pathname,
+      type: "article",
+    };
+    const activeSeo = isAboutPage ? ABOUT_SEO : workSeo ?? (pathname === "/work" ? WORK_SEO : HOME_SEO);
     const canonicalUrl = toAbsoluteUrl(SITE_URL, activeSeo.path);
     const imageUrl = toAbsoluteUrl(SITE_URL, DEFAULT_OG_IMAGE_PATH);
-    const schema = isAboutPage
-      ? createAboutPageSchema(SITE_URL)
-      : createHomePageSchema(SITE_URL);
+    const schema = isAboutPage ? createAboutPageSchema(SITE_URL)
+      : workSeo || pathname === "/work"
+        ? {
+          "@context": "https://schema.org",
+          "@type": workSeo ? "WebPage" : "CollectionPage",
+          name: activeSeo.title,
+          description: activeSeo.description,
+          url: canonicalUrl,
+          inLanguage: "en",
+        }
+        : createHomePageSchema(SITE_URL);
 
     document.title = activeSeo.title;
     document.documentElement.lang = "en";
@@ -93,7 +118,7 @@ export function SeoManager() {
     upsertMeta("name", "twitter:image", imageUrl);
     upsertLink("canonical", canonicalUrl);
     upsertJsonLd("route-schema", schema);
-  }, [location.pathname]);
+  }, [location.pathname, workEntries]);
 
   return null;
 }
